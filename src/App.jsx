@@ -14,6 +14,7 @@ function App() {
   const [brandDescription, setBrandDescription] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
   
+  const descriptionPlaceholder = `Ej: "Somos una hamburguesería artesanal con opciones veganas, ubicada en Providencia. Abrimos hasta tarde y hacemos delivery por apps."`
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -86,16 +87,16 @@ function App() {
         <div className="text-start text-lg mb-8 flex flex-col w-full items-center justify-center">
         <div className="flex flex-col gap-2 w-1/2 mb-4">
             <label>Nombre de tu marca</label>
-            <input value={brandName} onChange={(e) => setBrandName(e.target.value)} type="text" placeholder="Escribe tu pregunta" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
+            <input value={brandName} onChange={(e) => setBrandName(e.target.value)} type="text"  placeholder="Ej: 'La hamburguesería'" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
           <div className="flex flex-col gap-2 w-1/2">
             <label>Describe tu negocio</label>
-            <textarea value={brandDescription} onChange={(e) => setBrandDescription(e.target.value)} placeholder="Escribe tu pregunta" className=" p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
+            <textarea value={brandDescription} onChange={(e) => setBrandDescription(e.target.value)} placeholder={descriptionPlaceholder} className=" p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
 
 
-          <div className="flex items-center justify-center gap-8 mt-2 ">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Analizar mi marca</button>
+          <div className="flex items-center justify-center gap-8 mt-4 ">
+            <button className="bg-blue-900 hover:bg-blue-800 cursor-pointer text-white text-2xl font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Analizar mi marca</button>
           </div>
           
         </div>
