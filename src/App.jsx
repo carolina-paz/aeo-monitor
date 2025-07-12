@@ -6,6 +6,8 @@ import './App.css'
 import { askChatGPT, askClaude, askGemini, askPerplexity } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
+import QuestionBlock from './components/QuestionBlock';
+import { mockQuestions, Models } from './data/mockData';
 
 function App() {
 
@@ -13,7 +15,8 @@ function App() {
   const [brandName, setBrandName] = useState('');
   const [brandDescription, setBrandDescription] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
-  
+
+  // Use mock data instead of hardcoded object
   const descriptionPlaceholder = `Ej: "Somos una hamburguesería artesanal con opciones veganas, ubicada en Providencia. Abrimos hasta tarde y hacemos delivery por apps."`
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,8 +81,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-800 py-8">
-      <div className=" mx-auto px-4">
+    <div className="min-h-screen flex flex-col  w-full bg-gray-800 py-8 pb-16">
+      <div className="flex flex-col items-center justify-center px-4">
         <div className="flex items-center justify-center mb-8">
           <img src={Logo} alt="logo" className="w-[200px] h-[200px] mr-4" />
 
@@ -101,41 +104,22 @@ function App() {
           
         </div>
         
-        {analyzed && <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button 
-              onClick={(e) => handleSubmit(e)}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
-            >
-              ChatGPT
-            </button>
-            <button 
-              onClick={(e) => handleClaude(e)}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
-            >
-              Claude
-            </button>
-            <button 
-              onClick={(e) => handleGemini(e)}
-              className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
-            >
-              Gemini
-            </button>
-            <button 
-              onClick={(e) => handlePerplexity(e)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
-            >
-              Perplexity
-            </button>
+        {/* {analyzed && <div className="flex flex-col gap-4">
+          <div className="text-white text-2xl font-semibold">
+            Análisis de tu marca
           </div>
-          
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <p className="text-gray-700 text-sm">
-              Haz clic en cualquiera de los botones para probar los diferentes modelos de IA
-            </p>
+          <div className="text-white text-base">
+            {brandDescription}
           </div>
         </div>
-        }
+        } */}
+        
+        {/* Test Section for QuestionBlock Component */}
+        <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
+                    <div className="space-y-4">
+            <QuestionBlock question={mockQuestions[0].question} />
+          </div>
+        </div>
         </div>
     </div>
   )
