@@ -1,5 +1,5 @@
 // utils/chatgpt.js
-export async function askChatGPT(question) {
+export async function askChatGPT(prompt) {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     
     // Verificar si la API key está configurada
@@ -19,7 +19,7 @@ export async function askChatGPT(question) {
           messages: [
             {
               role: 'user',
-              content: question,
+              content: prompt,
             },
           ],
           temperature: 0.7,
@@ -46,7 +46,7 @@ export async function askChatGPT(question) {
   }
 
 // utils/claude.js
-export async function askClaude(question) {
+export async function askClaude(prompt) {
     const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
     
     // Verificar si la API key está configurada
@@ -68,7 +68,7 @@ export async function askClaude(question) {
           messages: [
             {
               role: 'user',
-              content: question,
+              content: prompt,
             },
           ],
           temperature: 0.7,
@@ -95,7 +95,7 @@ export async function askClaude(question) {
   }
 
 // utils/gemini.js
-export async function askGemini(question) {
+export async function askGemini(prompt) {
     const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
     
     // Verificar si la API key está configurada
@@ -114,7 +114,7 @@ export async function askGemini(question) {
             {
               parts: [
                 {
-                  text: question,
+                  text: prompt,
                 },
               ],
             },
@@ -146,7 +146,7 @@ export async function askGemini(question) {
   }
 
 // utils/perplexity.js
-export async function askPerplexity(question) {
+export async function askPerplexity(prompt) {
     const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
     
     // Verificar si la API key está configurada
@@ -166,7 +166,7 @@ export async function askPerplexity(question) {
           messages: [
             {
               role: 'user',
-              content: question,
+            content: prompt,
             },
           ],
           temperature: 0.7,
