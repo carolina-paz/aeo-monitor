@@ -3,57 +3,28 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import { askChatGPT, askClaude, askGemini, askPerplexity } from './utils';
+import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
 import { mockQuestions, Models } from './data/mockData';
-
+import { prompt } from './data/prompts';
 function App() {
   const [brandName, setBrandName] = useState('');
   const [brandDescription, setBrandDescription] = useState('');
   const [location, setLocation] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
+  const [GPTanalysis, setGPTanalysis] = useState([]);
+  const [Claudeanalysis, setClaudeanalysis] = useState([]);
+  const [Geminianalysis, setGeminianalysis] = useState([]);
+  const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
+  const [fullAnalysis, setFullAnalysis] = useState([]);
 
-  const prompt = `Actúa como un sistema que evalúa la visibilidad de un negocio en respuestas generadas por modelos de lenguaje.
-
-  Tu objetivo es ayudar a simular y monitorear el rendimiento AEO (Answer Engine Optimization) de una empresa usando modelos LLM.
-  
-  Estos son los datos de la empresa:
-  - nombre: {nombre}
-  - descripcion: {descripcion}
-  - ubicacion: {ubicacion}
-  
-  Tu tarea consiste en lo siguiente:
-  
-  1. Generar 10 preguntas distintas que una persona podría hacerle a ChatGPT buscando una recomendación en esa ubicación, y que podrían llevarla a descubrir este negocio si el modelo lo reconoce como relevante.
-     - Las preguntas deben ser realistas, naturales y variadas en su formulación.
-     - Deben centrarse en temas relacionados con la categoría y propuesta del negocio.
-  
-  2. Para cada pregunta:
-     - Responde como si un usuario real te la hubiera hecho. Genera una respuesta completa, natural y útil, recomendando lugares en base a lo que sabes sobre la zona y el tipo de negocio.
-     - Dentro de esa respuesta, podés o no mencionar el nombre exacto del negocio ({nombre}). No fuerces la mención si no fluye de forma natural.
-  
-  3. Después de cada respuesta, extrae lo siguiente:
-     - "ranking": una lista ordenada de los lugares mencionados en la respuesta, en el orden exacto en que aparecen.
-     - "present": true si el nombre exacto del negocio ({nombre}) aparece en ese ranking; false si no.
-  
-  Devuélveme el resultado como un arreglo JSON de 10 objetos, uno por cada pregunta.
-  
-  Cada objeto debe tener esta estructura:
-  
-  {
-    "question": "texto de la pregunta generada por el usuario",
-    "ranking": ["nombre de lugar 1", "nombre de lugar 2", "..."],
-    "present": true
-  }
-  
-  No agregues explicaciones, introducciones ni justificaciones. Solo devuelve el arreglo JSON, estrictamente con ese formato.`;
 
   // Use mock data instead of hardcoded object
   const descriptionPlaceholder = `Ej: "Somos una hamburguesería artesanal con opciones veganas, ubicada en Providencia. Abrimos hasta tarde y hacemos delivery por apps."`;
   
-  const handleSubmit = async (e) => {
+  const handleGPT = async (e) => {
     e.preventDefault();
     try {
       // Replace placeholders in the prompt with actual form data
@@ -64,9 +35,14 @@ function App() {
       
       console.log("Sending prompt with form data:", filledPrompt);
       const answer = await askChatGPT(filledPrompt);
-      console.log("Received answer:", answer);
+      
+      // Parse the JSON response
+      const parsedAnswer = JSON.parse(answer);
+      setGPTanalysis(parsedAnswer);
+      setAnalyzed(true);
+
     } catch (error) {
-      console.error("Error en handleSubmit:", error);
+      console.error("Error en handleGPT:", error);
       alert(`Error: ${error.message}`);
     }
     // try {
@@ -84,10 +60,20 @@ function App() {
   const handleClaude = async (e) => {
     e.preventDefault();
     try {
-      const question = "Cuentame un chiste";
-      console.log("Sending question to Claude:", question);
-      const answer = await askClaude(question);
-      console.log("Received answer from Claude:", answer);
+      // Replace placeholders in the prompt with actual form data
+      const filledPrompt = prompt
+        .replace(/{nombre}/g, brandName)
+        .replace(/{descripcion}/g, brandDescription)
+        .replace(/{ubicacion}/g, location);
+      
+      console.log("Sending prompt with form data:", filledPrompt);
+      const answer = await askClaude(filledPrompt);
+      
+      // Parse the JSON response
+      const parsedAnswer = JSON.parse(answer);
+      setClaudeanalysis(parsedAnswer);
+      setAnalyzed(true);
+
     } catch (error) {
       console.error("Error en handleClaude:", error);
       alert(`Error: ${error.message}`);
@@ -97,10 +83,20 @@ function App() {
   const handleGemini = async (e) => {
     e.preventDefault();
     try {
-      const question = "Cuentame un chiste";
-      console.log("Sending question to Gemini:", question);
-      const answer = await askGemini(question);
-      console.log("Received answer from Gemini:", answer);
+      // Replace placeholders in the prompt with actual form data
+      const filledPrompt = prompt
+        .replace(/{nombre}/g, brandName)
+        .replace(/{descripcion}/g, brandDescription)
+        .replace(/{ubicacion}/g, location);
+      
+      console.log("Sending prompt with form data:", filledPrompt);
+      const answer = await askGemini(filledPrompt);
+      
+      // Parse the JSON response
+      const parsedAnswer = JSON.parse(answer);
+      setGeminianalysis(parsedAnswer);
+      setAnalyzed(true);
+
     } catch (error) {
       console.error("Error en handleGemini:", error);
       alert(`Error: ${error.message}`);
@@ -110,12 +106,70 @@ function App() {
   const handlePerplexity = async (e) => {
     e.preventDefault();
     try {
-      const question = "Cuentame un chiste";
-      console.log("Sending question to Perplexity:", question);
-      const answer = await askPerplexity(question);
-      console.log("Received answer from Perplexity:", answer);
+      // Replace placeholders in the prompt with actual form data
+      const filledPrompt = prompt
+        .replace(/{nombre}/g, brandName)
+        .replace(/{descripcion}/g, brandDescription)
+        .replace(/{ubicacion}/g, location);
+      
+      console.log("Sending prompt with form data:", filledPrompt);
+      const answer = await askPerplexity(filledPrompt);
+      
+      // Parse the JSON response
+      const parsedAnswer = JSON.parse(answer);
+      setPerplexityanalysis(parsedAnswer);
+      setAnalyzed(true);
+
     } catch (error) {
       console.error("Error en handlePerplexity:", error);
+      alert(`Error: ${error.message}`);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Replace placeholders in the prompt with actual form data
+      const filledPrompt = prompt
+        .replace(/{nombre}/g, brandName)
+        .replace(/{descripcion}/g, brandDescription)
+        .replace(/{ubicacion}/g, location);
+      
+      console.log("Sending prompt with form data:", filledPrompt);
+      
+      // Execute all models in parallel
+      const [gptAnswer, claudeAnswer, geminiAnswer, perplexityAnswer] = await Promise.all([
+        askChatGPT(filledPrompt),
+        askClaude(filledPrompt),
+        askGemini(filledPrompt),
+        askPerplexity(filledPrompt)
+      ]);
+      
+      // Parse all JSON responses
+      const parsedGPT = JSON.parse(gptAnswer);
+      const parsedClaude = JSON.parse(claudeAnswer);
+      const parsedGemini = JSON.parse(geminiAnswer);
+      const parsedPerplexity = JSON.parse(perplexityAnswer);
+      
+      // Set all analysis states
+      setGPTanalysis(parsedGPT);
+      setClaudeanalysis(parsedClaude);
+      setGeminianalysis(parsedGemini);
+      setPerplexityanalysis(parsedPerplexity);
+      
+      // Create full analysis object with models as keys
+      const analysisObject = {
+        GPT: parsedGPT,
+        Claude: parsedClaude,
+        Gemini: parsedGemini,
+        Perplexity: parsedPerplexity
+      };
+      
+      setFullAnalysis(analysisObject);
+      setAnalyzed(true);
+
+    } catch (error) {
+      console.error("Error en handleSubmit:", error);
       alert(`Error: ${error.message}`);
     }
   };
@@ -159,11 +213,28 @@ function App() {
         } */}
         
         {/* Test Section for QuestionBlock Component */}
-        <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
+       {analyzed && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
                     <div className="space-y-4">
-            <QuestionBlock question={mockQuestions[0].question} />
+          {GPTanalysis.map((question, index) => {
+            let position = 0;
+            if (question.present) {
+              const foundIndex = findPosition(question.ranking, brandName);
+              position = foundIndex >= 0 ? foundIndex + 1 : 0;
+            }
+            
+            return (
+              <div key={index}>
+                <QuestionBlock 
+                  question={question.question} 
+                  ranking={question.ranking} 
+                  position={position}
+                />
+              </div>
+            );
+          })}
           </div>
         </div>
+        }
         </div>
     </div>
   )

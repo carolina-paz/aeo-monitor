@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const ModelDetail = ({ model, position, ranking }) => {
+const ModelDetail = ({ model, position, ranking, }) => {
 
     const [showRanking, setShowRanking] = useState(false);
 

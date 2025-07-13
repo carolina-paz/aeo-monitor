@@ -193,3 +193,19 @@ export async function askPerplexity(prompt) {
     }
   }
   
+
+  export const findPosition = (ranking, name) => {
+    const foundIndex = ranking.findIndex(item => {
+      const itemLower = item.toLowerCase().trim();
+      const nameLower = name.toLowerCase().trim();
+      return itemLower === nameLower;
+    });
+    
+    return foundIndex;
+  }
+
+  export const extractRanking = (answer) => {
+    const ranking = answer.match(/ranking:\s*(\[.*?\])/);
+    return ranking ? JSON.parse(ranking[1]) : [];
+  }
+
