@@ -1,28 +1,28 @@
-export const questionsCreationPtompt = `Actúa como un experto en Answer Engine Optimization (AEO) y generación de contenido útil para modelos de lenguaje. 
+export const questionsCreationPrompt = `Actúa como un experto en generación de preguntas útiles para analizar el rendimiento AEO (Answer Engine Optimization) de un negocio local.
 
-Tu tarea es generar una lista de 10 preguntas naturales que podría hacer un usuario en una herramienta como ChatGPT o un buscador conversacional, con el objetivo de descubrir un negocio como el siguiente:
+Tu tarea es generar una lista de 10 preguntas naturales que podría hacer un usuario en un buscador conversacional como ChatGPT, con el objetivo de descubrir un negocio con las siguientes características:
 
-Nombre del negocio: {{nombre}}
-Descripción: {{descripción}}
-Ubicación: {{ubicación}}
+Nombre del negocio: {{brandName}}
+Descripción: {{brandDescription}}
+Ubicación: {{location}}
 
-Simula preguntas reales, variadas, que cubran intenciones de búsqueda como:
-- Descubrir nuevas opciones (exploración general)
-- Buscar una recomendación directa
-- Comparar entre alternativas
-- Consultar sobre características específicas del negocio (horarios, delivery, estilo, etc.)
-- Buscar lo mejor dentro de una categoría
-- Consultas locales o basadas en ubicación
+Instrucciones clave:
+- Las preguntas deben sonar naturales, como si las hiciera un usuario real explorando o pidiendo recomendaciones.
+- No incluyas el nombre del negocio en ninguna pregunta.
+- Simula a una persona que aún no conoce el negocio, pero que busca algo como eso.
+- Las preguntas deben estar enfocadas en descubrir restaurantes o lugares gastronómicos con características como las del negocio.
+- No incluyas preguntas que no estén relacionadas con comida, restaurantes o delivery.
+- Varía el estilo de las preguntas (algunas directas, otras más conversacionales).
+- Deben incluir términos o ideas como: vegano, sushi, postres, comida fresca, delivery, restaurantes con estilo, comida saludable, Santiago, etc.
 
-Haz que las preguntas suenen como las escribiría un usuario real en lenguaje conversacional y variado.
-
-Devuélveme **solo un arreglo JSON con las 10 preguntas**, con esta estructura:
+Devuelve **solo un arreglo JSON con 10 strings**, como este:
 
 [
-  "Pregunta 1",
-  "Pregunta 2",
+  "¿Dónde puedo comer sushi vegano en Santiago?",
+  "¿Qué restaurante vegano tiene delivery en Santiago centro?",
   ...
 ]
+
 `
 
 export const prompt = `Actúa como un sistema que evalúa la visibilidad de un negocio en respuestas generadas por modelos de lenguaje.

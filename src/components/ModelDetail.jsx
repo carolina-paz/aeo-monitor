@@ -1,6 +1,6 @@
 import { useState } from 'react';
-
-const ModelDetail = ({ model, position, ranking, }) => {
+import { findPosition } from '../utils';
+const ModelDetail = ({ model, ranking, brandName}) => {
 
     const [showRanking, setShowRanking] = useState(false);
 
@@ -11,7 +11,7 @@ const ModelDetail = ({ model, position, ranking, }) => {
                 {model}
             </div>
           <div className="text-gray-800 text-2xl bg-white text-blue-900  p-2 rounded-lg  text-center w-full font-bold">
-              #{position}
+                <div id={findPosition(ranking, brandName)}></div>
           </div>
           <p onClick={() => setShowRanking(!showRanking)} className=" underline text-sm cursor-pointer">{showRanking ? "Ocultar ranking" : "Ver ranking completo"}</p>
           {showRanking && (

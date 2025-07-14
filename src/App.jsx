@@ -3,7 +3,7 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition } from './utils';
+import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIResponse, generateQuestions } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
@@ -15,157 +15,23 @@ function App() {
   const [location, setLocation] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
   const [GPTanalysis, setGPTanalysis] = useState([]);
-  const [Claudeanalysis, setClaudeanalysis] = useState([]);
+  // const [Claudeanalysis, setClaudeanalysis] = useState([]);
   const [Geminianalysis, setGeminianalysis] = useState([]);
-  const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
+  // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
   const [fullAnalysis, setFullAnalysis] = useState([]);
 
 
   // Use mock data instead of hardcoded object
   const descriptionPlaceholder = `Ej: "Somos una hamburguesería artesanal con opciones veganas, ubicada en Providencia. Abrimos hasta tarde y hacemos delivery por apps."`;
   
-  const handleGPT = async (e) => {
-    e.preventDefault();
-    try {
-      // Replace placeholders in the prompt with actual form data
-      const filledPrompt = prompt
-        .replace(/{nombre}/g, brandName)
-        .replace(/{descripcion}/g, brandDescription)
-        .replace(/{ubicacion}/g, location);
-      
-      console.log("Sending prompt with form data:", filledPrompt);
-      const answer = await askChatGPT(filledPrompt);
-      
-      // Parse the JSON response
-      const parsedAnswer = JSON.parse(answer);
-      setGPTanalysis(parsedAnswer);
-      setAnalyzed(true);
 
-    } catch (error) {
-      console.error("Error en handleGPT:", error);
-      alert(`Error: ${error.message}`);
-    }
-    // try {
-    //   const docRef = await addDoc(collection(db, "questions"), {
-    //     question: question,
-    //     answer: answer,
-    //     timestamp: new Date(),
-    //   });
-    //   console.log("Document written with ID: ", docRef.id);
-    // } catch (error) {
-    //   console.error("Error adding document: ", error);
-    // }
-  };
-
-  const handleClaude = async (e) => {
-    e.preventDefault();
-    try {
-      // Replace placeholders in the prompt with actual form data
-      const filledPrompt = prompt
-        .replace(/{nombre}/g, brandName)
-        .replace(/{descripcion}/g, brandDescription)
-        .replace(/{ubicacion}/g, location);
-      
-      console.log("Sending prompt with form data:", filledPrompt);
-      const answer = await askClaude(filledPrompt);
-      
-      // Parse the JSON response
-      const parsedAnswer = JSON.parse(answer);
-      setClaudeanalysis(parsedAnswer);
-      setAnalyzed(true);
-
-    } catch (error) {
-      console.error("Error en handleClaude:", error);
-      alert(`Error: ${error.message}`);
-    }
-  };
-
-  const handleGemini = async (e) => {
-    e.preventDefault();
-    try {
-      // Replace placeholders in the prompt with actual form data
-      const filledPrompt = prompt
-        .replace(/{nombre}/g, brandName)
-        .replace(/{descripcion}/g, brandDescription)
-        .replace(/{ubicacion}/g, location);
-      
-      console.log("Sending prompt with form data:", filledPrompt);
-      const answer = await askGemini(filledPrompt);
-      
-      // Parse the JSON response
-      const parsedAnswer = JSON.parse(answer);
-      setGeminianalysis(parsedAnswer);
-      setAnalyzed(true);
-
-    } catch (error) {
-      console.error("Error en handleGemini:", error);
-      alert(`Error: ${error.message}`);
-    }
-  };
-
-  const handlePerplexity = async (e) => {
-    e.preventDefault();
-    try {
-      // Replace placeholders in the prompt with actual form data
-      const filledPrompt = prompt
-        .replace(/{nombre}/g, brandName)
-        .replace(/{descripcion}/g, brandDescription)
-        .replace(/{ubicacion}/g, location);
-      
-      console.log("Sending prompt with form data:", filledPrompt);
-      const answer = await askPerplexity(filledPrompt);
-      
-      // Parse the JSON response
-      const parsedAnswer = JSON.parse(answer);
-      setPerplexityanalysis(parsedAnswer);
-      setAnalyzed(true);
-
-    } catch (error) {
-      console.error("Error en handlePerplexity:", error);
-      alert(`Error: ${error.message}`);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Replace placeholders in the prompt with actual form data
-      const filledPrompt = prompt
-        .replace(/{nombre}/g, brandName)
-        .replace(/{descripcion}/g, brandDescription)
-        .replace(/{ubicacion}/g, location);
-      
-      console.log("Sending prompt with form data:", filledPrompt);
-      
-      // Execute all models in parallel
-      const [gptAnswer, claudeAnswer, geminiAnswer, perplexityAnswer] = await Promise.all([
-        askChatGPT(filledPrompt),
-        askClaude(filledPrompt),
-        askGemini(filledPrompt),
-        askPerplexity(filledPrompt)
-      ]);
-      
-      // Parse all JSON responses
-      const parsedGPT = JSON.parse(gptAnswer);
-      const parsedClaude = JSON.parse(claudeAnswer);
-      const parsedGemini = JSON.parse(geminiAnswer);
-      const parsedPerplexity = JSON.parse(perplexityAnswer);
-      
-      // Set all analysis states
-      setGPTanalysis(parsedGPT);
-      setClaudeanalysis(parsedClaude);
-      setGeminianalysis(parsedGemini);
-      setPerplexityanalysis(parsedPerplexity);
-      
-      // Create full analysis object with models as keys
-      const analysisObject = {
-        GPT: parsedGPT,
-        Claude: parsedClaude,
-        Gemini: parsedGemini,
-        Perplexity: parsedPerplexity
-      };
-      
-      setFullAnalysis(analysisObject);
+
+      const questions = await generateQuestions(brandName, brandDescription, location);
+      console.log("Questions:", questions);
       setAnalyzed(true);
 
     } catch (error) {

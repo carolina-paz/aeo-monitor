@@ -1,4 +1,19 @@
 // utils/chatgpt.js
+import { questionsCreationPrompt } from "./data/prompts";
+
+export function fillPrompt(promptTemplate, brandName, brandDescription, location) {
+  return promptTemplate
+    .replace(/{{brandName}}/g, brandName)
+    .replace(/{{brandDescription}}/g, brandDescription)
+    .replace(/{{location}}/g, location);
+}
+
+export async function generateQuestions(brandName, brandDescription, location) {
+  const prompt = fillPrompt(questionsCreationPrompt, brandName, brandDescription, location);
+  const questions = await askChatGPT(prompt);
+  return questions;
+}   
+
 export async function askChatGPT(prompt) {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     
@@ -104,7 +119,7 @@ export async function askGemini(prompt) {
     }
   
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -208,4 +223,35 @@ export async function askPerplexity(prompt) {
     const ranking = answer.match(/ranking:\s*(\[.*?\])/);
     return ranking ? JSON.parse(ranking[1]) : [];
   }
+
+// Function to clean AI responses that may contain markdown formatting
+export const cleanAIResponse = (response) => {
+  if (!response || typeof response !== 'string') {
+    return response;
+  }
+  
+  // Remove markdown code blocks
+  let cleaned = response.replace(/```json\s*/g, '').replace(/```\s*$/g, '');
+  
+  // Remove any leading/trailing whitespace
+  cleaned = cleaned.trim();
+  
+  // If the response starts with [ and ends with ], it's likely JSON
+  if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+    return cleaned;
+  }
+  
+  // If the response starts with { and ends with }, it's likely JSON
+  if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+    return cleaned;
+  }
+  
+  // Try to extract JSON from the response
+  const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
+  if (jsonMatch) {
+    return jsonMatch[0];
+  }
+  
+  return cleaned;
+}
 
