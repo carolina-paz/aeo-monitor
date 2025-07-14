@@ -39,15 +39,18 @@ Para cada pregunta:
 
 2. Solo incluye nombres de lugares reales que ya conozcas como modelo. No inventes nombres. Si no puedes recordar lugares reales relevantes para una pregunta, responde con lo que sepas sin inventar.
 
-Después de cada respuesta, extrae el "ranking": una lista ordenada de los nombres de lugares mencionados en la respuesta, exactamente en el orden en que fueron nombrados.
+3. Después de cada respuesta, extrae el "ranking": una lista ordenada de los nombres de lugares mencionados en la respuesta, exactamente en el orden en que fueron nombrados.
 
-Devuélveme únicamente un arreglo JSON por pregunta, con los nombres mencionados en orden. No incluyas explicaciones, introducciones ni justificaciones.
+Devuélveme un arreglo JSON donde cada elemento sea un arreglo con los nombres de lugares mencionados para cada pregunta, en el orden que aparecen en la respuesta.
 
-Ejemplo de formato:
+Si una pregunta no tiene lugares relevantes reales, incluye un arreglo vacío para esa pregunta.
+
+Ejemplo de formato para 3 preguntas:
 
 [
-  "Restaurante A",
-  "Restaurante B",
-  "Restaurante C"
+  ["Restaurante A", "Restaurante B", "Restaurante C"],
+  ["Café X", "Restaurante Y"],
+  []
 ]
-`;
+
+IMPORTANTE: No incluyas explicaciones, introducciones ni justificaciones. Solo el arreglo JSON.`;
