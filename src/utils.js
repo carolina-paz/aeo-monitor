@@ -1,18 +1,41 @@
 // utils/chatgpt.js
-import { questionsCreationPrompt } from "./data/prompts";
+import { questionsCreationPrompt, analysisPrompt } from "./data/prompts";
 
-export function fillPrompt(promptTemplate, brandName, brandDescription, location) {
+export function fillQuestionsPrompt(promptTemplate, brandName, brandDescription, location) {
   return promptTemplate
     .replace(/{{brandName}}/g, brandName)
     .replace(/{{brandDescription}}/g, brandDescription)
     .replace(/{{location}}/g, location);
 }
 
+export function fillAnalysisPrompt(promptTemplate, questions) {
+  return promptTemplate
+    .replace(/{{questions}}/g, questions);
+}
+
 export async function generateQuestions(brandName, brandDescription, location) {
-  const prompt = fillPrompt(questionsCreationPrompt, brandName, brandDescription, location);
+  const prompt = fillQuestionsPrompt(questionsCreationPrompt, brandName, brandDescription, location);
   const questions = await askChatGPT(prompt);
   return questions;
 }   
+
+export async function askQuestions(questions, model) {
+  console.log("askQuestions called with model:", model);
+  const prompt = fillAnalysisPrompt(analysisPrompt, questions);
+  console.log("Prompt created:", prompt);
+  if (model === 'gpt') {
+    console.log("Calling askChatGPT...");
+    const GPTresponse = await askChatGPT(prompt);
+    console.log("Raw GPT response:", GPTresponse);
+    const GPTanalysis = cleanAIResponse(GPTresponse);
+    console.log("Cleaned GPT analysis:", GPTanalysis);
+    return GPTanalysis;
+  } else if (model === 'claude') {
+    const Clauderesponse = await askClaude(prompt);
+    const Claudeanalysis = cleanAIResponse(Clauderesponse);
+    return Claudeanalysis;
+  }
+}
 
 export async function askChatGPT(prompt) {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;

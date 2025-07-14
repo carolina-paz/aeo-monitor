@@ -3,12 +3,11 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIResponse, generateQuestions } from './utils';
+import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIResponse, generateQuestions, askQuestions } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
-import { mockQuestions, Models } from './data/mockData';
-import { prompt } from './data/prompts';
+
 function App() {
   const [brandName, setBrandName] = useState('');
   const [brandDescription, setBrandDescription] = useState('');
@@ -32,7 +31,14 @@ function App() {
 
       const questions = await generateQuestions(brandName, brandDescription, location);
       console.log("Questions:", questions);
+      
+      console.log("About to call askQuestions...");
+      const GPTanalysis = await askQuestions(questions, 'gpt');
+      console.log("GPTanalysis received:", GPTanalysis);
+      setGPTanalysis(GPTanalysis);
+      console.log("GPTanalysis set in state");
       setAnalyzed(true);
+      console.log("Analyzed set to true");
 
     } catch (error) {
       console.error("Error en handleSubmit:", error);

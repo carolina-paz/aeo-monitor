@@ -25,31 +25,29 @@ Devuelve **solo un arreglo JSON con 10 strings**, como este:
 
 `
 
-export const prompt = `Actúa como un sistema que evalúa la visibilidad de un negocio en respuestas generadas por modelos de lenguaje.
+export const analysisPrompt = `Actúa como un sistema que evalúa la visibilidad de un negocio en respuestas generadas por modelos de lenguaje.
 
 Tu objetivo es ayudar a simular y monitorear el rendimiento AEO (Answer Engine Optimization) de una empresa usando modelos LLM.
-El nombre de la empresa es: {nombre}
 
-Tu tarea consiste en lo siguiente:
+A continuación te entregaré una lista de preguntas que haría un usuario buscando recomendaciones reales.
 
-Para lo que viene, te entrego una lista de preguntas: {preguntas}.
+{{questions}}
 
-1. Para cada pregunta:
-   - Responde como si un usuario real te la hubiera hecho. Genera una respuesta completa, natural y útil, recomendando lugares en base a lo que sabes sobre la zona y el tipo de negocio.
-   - Responde de manera completamente natural, como si no conocieras específicamente este negocio. Solo menciona lugares que realmente existirían en esa zona.
-   - NO fuerces la mención del negocio {nombre}. Solo inclúyelo si realmente fuera la mejor opción natural para esa pregunta específica.
+Para cada pregunta:
 
-2. Después de cada respuesta, extrae lo siguiente:
-   - "ranking": una lista ordenada de los lugares mencionados en la respuesta, en el orden exacto en que aparecen.
-   - "present": true si el nombre exacto del negocio ({nombre}) aparece en ese ranking; false si no.
+1. Responde como si un usuario real te la hubiera hecho. Genera una respuesta completa, natural y útil, recomendando lugares que el modelo recuerde como reales, relevantes y conocidos en la zona correspondiente.
 
-Devuélveme el resultado como un arreglo JSON de 10 objetos, uno por cada pregunta.
+2. Solo incluye nombres de lugares reales que ya conozcas como modelo. No inventes nombres. Si no puedes recordar lugares reales relevantes para una pregunta, responde con lo que sepas sin inventar.
 
-Cada objeto debe tener esta estructura:
+Después de cada respuesta, extrae el "ranking": una lista ordenada de los nombres de lugares mencionados en la respuesta, exactamente en el orden en que fueron nombrados.
 
-{
-  "ranking": ["nombre de lugar 1", "nombre de lugar 2", "..."],
-  "present": true
-}
+Devuélveme únicamente un arreglo JSON por pregunta, con los nombres mencionados en orden. No incluyas explicaciones, introducciones ni justificaciones.
 
-No agregues explicaciones, introducciones ni justificaciones. Solo devuelve el arreglo JSON, estrictamente con ese formato.`;
+Ejemplo de formato:
+
+[
+  "Restaurante A",
+  "Restaurante B",
+  "Restaurante C"
+]
+`;
