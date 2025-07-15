@@ -3,7 +3,7 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIResponse, generateQuestions, askQuestions } from './utils';
+import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIResponse, generateQuestions, askQuestions, askChatGPTWithContext } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
@@ -20,6 +20,7 @@ function App() {
   const [Geminianalysis, setGeminianalysis] = useState([]);
   // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
   const [fullAnalysis, setFullAnalysis] = useState([]);
+  const [contextResponse, setContextResponse] = useState('');
 
   // Función para probar googleSearch
   const testGoogleSearch = async () => {
@@ -42,6 +43,33 @@ function App() {
     } catch (error) {
       console.error('Error en testGoogleSearch:', error);
       alert(`Error al probar Google Search: ${error.message}`);
+    }
+  };
+
+  // Función para probar askChatGPTWithContext
+  const testChatGPTWithContext = async () => {
+    if (!brandName.trim()) {
+      alert('Por favor ingresa un nombre de marca para probar');
+      return;
+    }
+
+    if (googleSearchResults.length === 0) {
+      alert('Primero debes hacer una búsqueda de Google para obtener contexto');
+      return;
+    }
+
+    try {
+      const prompt = `Analiza la presencia online de "${brandName}" basándote en la información de búsqueda web proporcionada. ¿Qué tan bien posicionada está esta marca en internet? ¿Qué fortalezas y debilidades puedes identificar?`;
+      
+      console.log('Probando askChatGPTWithContext con:', brandName);
+      const response = await askChatGPTWithContext(prompt, googleSearchResults);
+      console.log('Respuesta con contexto:', response);
+      setContextResponse(response);
+      
+      alert('Análisis con contexto completado! Revisa la sección de resultados.');
+    } catch (error) {
+      console.error('Error en testChatGPTWithContext:', error);
+      alert(`Error al analizar con contexto: ${error.message}`);
     }
   };
 
@@ -97,6 +125,7 @@ function App() {
           <div className="flex items-center justify-center gap-8 mt-4 ">
             <button onClick={(e) => handleSubmit(e)} className="bg-blue-900 hover:bg-blue-800 cursor-pointer text-white text-2xl font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Analizar mi marca</button>
             <button onClick={testGoogleSearch} className="bg-green-600 hover:bg-green-500 cursor-pointer text-white text-lg font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Probar Google Search</button>
+            <button onClick={testChatGPTWithContext} className="bg-purple-600 hover:bg-purple-500 cursor-pointer text-white text-lg font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Analizar con Contexto</button>
           </div>
           
         </div>
@@ -153,6 +182,20 @@ function App() {
                   <p className="text-gray-300">{result.snippet}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Sección de análisis con contexto */}
+        {contextResponse && (
+          <div className="mt-8 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
+            <div className="text-white text-2xl font-semibold mb-4">
+              Análisis con Contexto Web para "{brandName}"
+            </div>
+            <div className="bg-gray-600 rounded-lg p-6">
+              <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
+                {contextResponse}
+              </div>
             </div>
           </div>
         )}

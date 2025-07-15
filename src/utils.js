@@ -278,3 +278,65 @@ export const cleanAIResponse = (response) => {
   return cleaned;
 }
 
+// Function to ask ChatGPT with Google Search context
+export async function askChatGPTWithContext(prompt, googleSearchResults) {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  
+  // Verificar si la API key está configurada
+  if (!apiKey) {
+    throw new Error("OpenAI API Key is not configured. Check your .env file");
+  }
+
+  // Preparar el contexto de Google Search
+  let contextMessage = "";
+  if (googleSearchResults && googleSearchResults.length > 0) {
+    contextMessage = "Basándote en la siguiente información de búsqueda web:\n\n";
+    googleSearchResults.forEach((result, index) => {
+      contextMessage += `${index + 1}. ${result.title}\n`;
+      contextMessage += `   URL: ${result.link}\n`;
+      contextMessage += `   Descripción: ${result.snippet}\n\n`;
+    });
+    contextMessage += "Ahora responde a la siguiente pregunta:\n\n";
+  }
+
+  const fullPrompt = contextMessage + prompt;
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: fullPrompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 1500, // Aumentado para respuestas más detalladas con contexto
+      }),
+    });
+
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
+    }
+
+    const data = await response.json();
+
+    if (data.choices && data.choices.length > 0) {
+      return data.choices[0].message.content;
+    } else {
+      throw new Error("The API response does not contain the expected options");
+    }
+  } catch (error) {
+    console.error("Error en askChatGPTWithContext:", error);
+    throw new Error(`There was an error getting the answer from ChatGPT with context: ${error.message}`);
+  }
+}
+
