@@ -7,6 +7,7 @@ import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIR
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
+import { googleSearch } from './googleSearch';
 
 function App() {
   const [brandName, setBrandName] = useState('');
@@ -14,10 +15,35 @@ function App() {
   const [location, setLocation] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
   const [GPTanalysis, setGPTanalysis] = useState([]);
+  const [googleSearchResults, setGoogleSearchResults] = useState([]);
   // const [Claudeanalysis, setClaudeanalysis] = useState([]);
   const [Geminianalysis, setGeminianalysis] = useState([]);
   // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
   const [fullAnalysis, setFullAnalysis] = useState([]);
+
+  // Función para probar googleSearch
+  const testGoogleSearch = async () => {
+    if (!brandName.trim()) {
+      alert('Por favor ingresa un nombre de marca para probar la búsqueda');
+      return;
+    }
+
+    try {
+      console.log('Probando googleSearch con:', brandName);
+      const results = await googleSearch(brandName);
+      console.log('Resultados de Google Search:', results);
+      setGoogleSearchResults(results);
+      
+      if (results.length > 0) {
+        alert(`Búsqueda exitosa! Se encontraron ${results.length} resultados. Revisa la consola para ver los detalles.`);
+      } else {
+        alert('No se encontraron resultados para esta búsqueda.');
+      }
+    } catch (error) {
+      console.error('Error en testGoogleSearch:', error);
+      alert(`Error al probar Google Search: ${error.message}`);
+    }
+  };
 
 
   // Use mock data instead of hardcoded object
@@ -70,6 +96,7 @@ function App() {
 
           <div className="flex items-center justify-center gap-8 mt-4 ">
             <button onClick={(e) => handleSubmit(e)} className="bg-blue-900 hover:bg-blue-800 cursor-pointer text-white text-2xl font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Analizar mi marca</button>
+            <button onClick={testGoogleSearch} className="bg-green-600 hover:bg-green-500 cursor-pointer text-white text-lg font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Probar Google Search</button>
           </div>
           
         </div>
@@ -107,6 +134,28 @@ function App() {
           </div>
         </div>
         }
+        
+        {/* Sección de resultados de Google Search */}
+        {googleSearchResults.length > 0 && (
+          <div className="mt-8 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
+            <div className="text-white text-2xl font-semibold mb-4">
+              Resultados de Google Search para "{brandName}"
+            </div>
+            <div className="space-y-4">
+              {googleSearchResults.map((result, index) => (
+                <div key={index} className="bg-gray-600 rounded-lg p-4">
+                  <h3 className="text-white font-semibold text-lg mb-2">
+                    <a href={result.link} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200">
+                      {result.title}
+                    </a>
+                  </h3>
+                  <p className="text-gray-200 text-sm mb-2">{result.link}</p>
+                  <p className="text-gray-300">{result.snippet}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         </div>
     </div>
   )
