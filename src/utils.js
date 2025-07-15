@@ -8,20 +8,41 @@ export function fillQuestionsPrompt(promptTemplate, brandName, brandDescription,
     .replace(/{{location}}/g, location);
 }
 
-export function fillAnalysisPrompt(promptTemplate, questions) {
+export function fillAnalysisPrompt(promptTemplate, question) {
   return promptTemplate
-    .replace(/{{questions}}/g, questions);
+    .replace(/{{question}}/g, question);
 }
 
 export async function generateQuestions(brandName, brandDescription, location) {
   const prompt = fillQuestionsPrompt(questionsCreationPrompt, brandName, brandDescription, location);
   const questions = await askChatGPT(prompt);
-  return questions;
+  
+  // Intentar parsear como JSON primero
+  try {
+    const cleanedResponse = cleanAIResponse(questions);
+    const parsedQuestions = JSON.parse(cleanedResponse);
+    
+    // Verificar que sea un array
+    if (Array.isArray(parsedQuestions)) {
+      console.log("Preguntas parseadas correctamente:", parsedQuestions);
+      return parsedQuestions;
+    }
+  } catch (error) {
+    console.warn("No se pudo parsear como JSON, intentando split por líneas:", error);
+  }
+  
+  // Fallback: intentar split por líneas (para compatibilidad)
+  const fallbackQuestions = questions.split('\n')
+    .map(question => question.trim())
+    .filter(question => question.length > 0);
+  
+  console.log("Preguntas usando fallback:", fallbackQuestions);
+  return fallbackQuestions;
 }   
 
-export async function askQuestions(questions, model) {
+export async function askQuestion(question, model) {
   console.log("askQuestions called with model:", model);
-  const prompt = fillAnalysisPrompt(analysisPrompt, questions);
+  const prompt = fillAnalysisPrompt(analysisPrompt, question);
   console.log("Prompt created:", prompt);
   if (model === 'gpt') {
     console.log("Calling askChatGPT...");
@@ -279,7 +300,7 @@ export const cleanAIResponse = (response) => {
 }
 
 // Function to ask ChatGPT with Google Search context
-export async function askChatGPTWithContext(prompt, googleSearchResults) {
+export async function askChatGPTWithContext(question, googleSearchResults) {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   
   // Verificar si la API key está configurada
@@ -296,10 +317,10 @@ export async function askChatGPTWithContext(prompt, googleSearchResults) {
       contextMessage += `   URL: ${result.link}\n`;
       contextMessage += `   Descripción: ${result.snippet}\n\n`;
     });
-    contextMessage += "Ahora responde a la siguiente pregunta:\n\n";
+    contextMessage += `${analysisPrompt.replace('{{question}}', question)}`;
   }
 
-  const fullPrompt = contextMessage + prompt;
+
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -313,7 +334,7 @@ export async function askChatGPTWithContext(prompt, googleSearchResults) {
         messages: [
           {
             role: 'user',
-            content: fullPrompt,
+            content: contextMessage,
           },
         ],
         temperature: 0.7,
