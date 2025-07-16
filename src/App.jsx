@@ -3,25 +3,21 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import { askChatGPT, askClaude, askGemini, askPerplexity, findPosition, cleanAIResponse, generateQuestions, askQuestion, askChatGPTWithContext } from './utils';
-import { analysisPrompt } from './data/prompts';
+import {  findPosition,  generateQuestions,  askChatGPTWithContext } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
 import { googleSearch } from './googleSearch';
-
+import ModelDetail from './components/ModelDetail';
 function App() {
   const [brandName, setBrandName] = useState('');
   const [brandDescription, setBrandDescription] = useState('');
   const [location, setLocation] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
   const [GPTanalysis, setGPTanalysis] = useState([]);
-  const [googleSearchResults, setGoogleSearchResults] = useState([]);
   // const [Claudeanalysis, setClaudeanalysis] = useState([]);
-  const [Geminianalysis, setGeminianalysis] = useState([]);
+  // const [Geminianalysis, setGeminianalysis] = useState([]);
   // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
-  const [fullAnalysis, setFullAnalysis] = useState([]);
-  const [contextResponse, setContextResponse] = useState('');
 
 
   // Use mock data instead of hardcoded object
@@ -37,7 +33,7 @@ function App() {
       console.log("Questions:", questions);
       
       // 2. Por cada pregunta, obtener resultados de Google y usar askChatGPTWithContext
-      const allResults = await googleSearch(questions[1]);
+      const allResults = await googleSearch(questions[0], location);
       for (const question of questions) {
         // Obtener resultados de Google para esta pregunta
         console.log(question);
@@ -103,23 +99,24 @@ function App() {
         {/* Test Section for QuestionBlock Component */}
        {analyzed && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
                     <div className="space-y-4">
-          {GPTanalysis.map((question, index) => {
+          {/* {GPTanalysis.map((question, index) => {
             let position = 0;
             if (question.present) {
               const foundIndex = findPosition(question.ranking, brandName);
               position = foundIndex >= 0 ? foundIndex + 1 : 0;
             }
             
-            return (
-              <div key={index}>
-                <QuestionBlock 
+            return ( */}
+              <div >
+                {/* <QuestionBlock 
                   question={question.question} 
                   ranking={question.ranking} 
                   position={position}
-                />
+                /> */}
+                {analyzed && <ModelDetail model="GPT" ranking={GPTanalysis} brandName={brandName} />}
               </div>
-            );
-          })}
+            {/* ); */}
+          {/* })} */}
           </div>
         </div>
         }

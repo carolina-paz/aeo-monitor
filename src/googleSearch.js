@@ -10,8 +10,12 @@ export async function googleSearch(query) {
     key: API_KEY,
     cx: CX,
     q: query,
+    gl: 'cl',
+    lr: 'lang_es',
+    // dateRestrict: 'm1',
+    // sort: 'relevance',
+    // num: 10,
   };
-
   try {
     const res = await axios.get(url, { params });
     return res.data.items.map(item => ({

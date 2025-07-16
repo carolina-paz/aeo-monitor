@@ -1,9 +1,18 @@
 import { useState } from 'react';
-import { findPosition } from '../utils';
+// import { findPosition } from '../utils';
 const ModelDetail = ({ model, ranking, brandName}) => {
 
     const [showRanking, setShowRanking] = useState(false);
 
+    if (ranking.length === 0) {
+        return (
+            <div className="flex flex-col gap-2  p-4 rounded-lg">
+                <div className="text-gray-800 text-2xl bg-white text-blue-900 border-2 border-blue-900 p-2 rounded-lg  text-center w-full font-bold">
+                    {model}
+                </div>
+            </div>
+        );
+    }
     return (
       <div className="flex flex-col gap-2  p-4 rounded-lg">
           <div className="text-gray-800 text-2xl bg-white text-blue-900 border-2 border-blue-900 p-2 rounded-lg  text-center w-full font-bold">
@@ -11,10 +20,10 @@ const ModelDetail = ({ model, ranking, brandName}) => {
                 {model}
             </div>
           <div className="text-gray-800 text-2xl bg-white text-blue-900  p-2 rounded-lg  text-center w-full font-bold">
-                <div id={findPosition(ranking, brandName)}></div>
+                <div >{brandName}</div>
           </div>
           <p onClick={() => setShowRanking(!showRanking)} className=" underline text-sm cursor-pointer">{showRanking ? "Ocultar ranking" : "Ver ranking completo"}</p>
-          {showRanking && (
+          {showRanking && ranking.length > 0 && (
                 <div className="flex flex-col gap-2 items-start px-1 mt-2">
                     {ranking.map((item, index) => (
                         <p key={index} className={`${index >= 3 ? 'text-sm' : 'text-lg'}`}>

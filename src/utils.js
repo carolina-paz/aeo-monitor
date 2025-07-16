@@ -1,5 +1,5 @@
 // utils/chatgpt.js
-import { questionsCreationPrompt, analysisPrompt } from "./data/prompts";
+import { questionsCreationPrompt} from "./data/prompts";
 
 export function fillQuestionsPrompt(promptTemplate, brandName, brandDescription, location) {
   return promptTemplate
@@ -40,23 +40,6 @@ export async function generateQuestions(brandName, brandDescription, location) {
   return fallbackQuestions;
 }   
 
-export async function askQuestion(question, model) {
-  console.log("askQuestions called with model:", model);
-  const prompt = fillAnalysisPrompt(analysisPrompt, question);
-  console.log("Prompt created:", prompt);
-  if (model === 'gpt') {
-    console.log("Calling askChatGPT...");
-    const GPTresponse = await askChatGPT(prompt);
-    console.log("Raw GPT response:", GPTresponse);
-    const GPTanalysis = cleanAIResponse(GPTresponse);
-    console.log("Cleaned GPT analysis:", GPTanalysis);
-    return GPTanalysis;
-  } else if (model === 'claude') {
-    const Clauderesponse = await askClaude(prompt);
-    const Claudeanalysis = cleanAIResponse(Clauderesponse);
-    return Claudeanalysis;
-  }
-}
 
 export async function askChatGPT(prompt) {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -311,16 +294,45 @@ export async function askChatGPTWithContext(question, googleSearchResults) {
   // Preparar el contexto de Google Search
   let contextMessage = "";
   if (googleSearchResults && googleSearchResults.length > 0) {
-    contextMessage = "Basándote en la siguiente información de búsqueda web:\n\n";
-    googleSearchResults.forEach((result, index) => {
-      contextMessage += `${index + 1}. ${result.title}\n`;
-      contextMessage += `   URL: ${result.link}\n`;
-      contextMessage += `   Descripción: ${result.snippet}\n\n`;
-    });
-    contextMessage += `${analysisPrompt.replace('{{question}}', question)}`;
+    const formattedSearchResults = googleSearchResults.map((result, index) => {
+      return `${index + 1}. ${result.title}\n   URL: ${result.link}\n   Descripción: ${result.snippet}`;
+    }).join('\n\n');
+    
+    contextMessage = `
+Tu objetivo es monitorear el rendimiento AEO (Answer Engine Optimization) de una empresa usando modelos LLM.
+
+Te entregaré:
+- Una pregunta que haría un usuario buscando recomendaciones reales.
+- Resultados de búsqueda de Google relacionados.
+
+Analiza los resultados y devuélveme solamente el "ranking": una lista ordenada de los nombres de negocios mencionados en los resultados que responderían bien a la pregunta,
+ en el orden en que los usarías en una respuesta útil y natural. Incluye la mayor cantidad de resultados posibles que sea menor a 11.
+
+---
+
+Pregunta:
+${question}
+
+---
+
+Resultados de búsqueda de Google:
+${formattedSearchResults}
+
+---
+
+IMPORTANTE:
+- Usa únicamente la información de los resultados de búsqueda.
+- No inventes nombres.
+- No incluyas ninguna explicación.
+- Devuelve **solo** un arreglo JSON, como este:
+
+["Restaurante A", "Restaurante B", "Restaurante C"]
+
+Si no se mencionan negocios reales relevantes, devuelve: []
+`;
+;
+    
   }
-
-
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -351,7 +363,25 @@ export async function askChatGPTWithContext(question, googleSearchResults) {
     const data = await response.json();
 
     if (data.choices && data.choices.length > 0) {
-      return data.choices[0].message.content;
+      const rawResponse = data.choices[0].message.content;
+      
+      // Intentar parsear como JSON primero
+      try {
+        const cleanedResponse = cleanAIResponse(rawResponse);
+        const parsedArray = JSON.parse(cleanedResponse);
+        
+        // Verificar que sea un array
+        if (Array.isArray(parsedArray)) {
+          console.log("Array parseado correctamente:", parsedArray);
+          return parsedArray;
+        } else {
+          console.warn("La respuesta no es un array válido, retornando array vacío");
+          return [];
+        }
+      } catch (error) {
+        console.warn("No se pudo parsear como JSON, retornando array vacío:", error);
+        return [];
+      }
     } else {
       throw new Error("The API response does not contain the expected options");
     }
