@@ -12,8 +12,8 @@ export async function googleSearch(query) {
     q: query,
     gl: 'cl',
     lr: 'lang_es',
-    // dateRestrict: 'm1',
-    // sort: 'relevance',
+      dateRestrict: 'm1',
+    //  sort: 'relevance',
     // num: 10,
   };
   try {
