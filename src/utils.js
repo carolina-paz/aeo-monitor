@@ -298,14 +298,15 @@ if (googleSearchResults && googleSearchResults.length > 0) {
     return `${index + 1}. ${result.title}\n   URL: ${result.link}\n   Descripción: ${result.snippet}`;
   }).join('\n\n');
 
-  contextMessage = `
-Tu objetivo es ayudar a monitorear el rendimiento AEO (Answer Engine Optimization) de una empresa usando modelos LLM.
+  contextMessage =
+`
+Actúa como un sistema de análisis AEO (Answer Engine Optimization) que evalúa qué negocios reales aparecen como recomendación en una respuesta generada por un modelo conversacional.
 
-Te entregaré:
-- Una pregunta que haría un usuario buscando recomendaciones reales.
-- Resultados de búsqueda de Google relacionados.
+Recibirás:
+- Una pregunta hecha por un usuario.
+- Resultados de búsqueda de Google relevantes.
 
-Analiza los resultados y devuélveme una lista ordenada de los NOMBRES PROPIOS de los 10 primeros **negocios reales o lugares físicos o digitales concretos** mencionados, que responderían bien a la pregunta, en el orden en que los usarías en una respuesta útil y natural.
+Tu tarea es identificar todos los negocios o lugares reales que podrían aparecer en una respuesta útil y natural a la pregunta, **basándote solo en los resultados de búsqueda**.
 
 ---
 
@@ -319,19 +320,22 @@ ${formattedSearchResults}
 
 ---
 
-IMPORTANTE:
-- Usa únicamente la información de los resultados de búsqueda.
-- NO inventes nombres ni completes con intuición.
-- Ignora resultados que sean artículos de opinión, blogs, reseñas genéricas, foros, recetas sin autor comercial, etc.
-- Incluye solo entidades comerciales reales con nombre propio: restaurantes, marcas, servicios, tiendas, apps, marketplaces, etc.
-- No incluyas explicaciones ni repitas la pregunta.
-- Devuelve **solo** un arreglo JSON, como este:
+Instrucciones importantes:
 
-["Restaurante A", "Tienda B", "Marca C"]
+- Usa exclusivamente la información contenida en los resultados.
+- No inventes negocios que no estén mencionados directamente.
+- Ignora resultados que sean solo blogs, artículos, recetas o contenido informativo.
+- Incluye todos los negocios, locales o servicios **mencionados explícitamente o claramente identificables como tales** que existan en CHILE.
+- Ordena los negocios en el arreglo según el orden en que los usarías en una respuesta útil.
+- No excluyas negocios por ser poco conocidos o nuevos: si es un lugar real, inclúyelo.
+- No incluyas ninguna explicación, saludo o texto adicional.  
+- Incluye al menos 5 negocios o lugares reales.
+- Devuelve solo el arreglo JSON, como este:
+
+["Negocio 1", "Negocio 2", "Negocio 3", "Negocio 4", "Negocio 5"]
 
 Si no hay negocios relevantes, devuelve: []
 `;
-
 ;
     
   }

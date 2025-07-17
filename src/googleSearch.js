@@ -11,6 +11,7 @@ export async function googleSearch(query, options = {}) {
     key: API_KEY,
     cx: CX,
     q: query,
+    gl: 'cl', // País Chile
     //num: 10, // Número de resultados
     safe: 'active', // Filtro de contenido seguro
     dateRestrict: 'm1', // Restringir a último mes para mayor relevancia

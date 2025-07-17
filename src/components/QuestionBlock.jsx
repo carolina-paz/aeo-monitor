@@ -12,7 +12,7 @@ const QuestionBlock = ({ question,  ranking, brandName}) => { //ranking is an ar
     {Models.map((model) => (
         <div className="w-1/4">
 
-            <ModelDetail model={model} ranking={ranking} />
+            <ModelDetail model={model} ranking={ranking} brandName={brandName} />
         </div>
     ))}
 </div>
