@@ -84,11 +84,11 @@ function App() {
             <input value={brandName} onChange={(e) => setBrandName(e.target.value)} type="text"  placeholder="Ej: 'La hamburguesería'" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
           <div className="flex flex-col gap-2 w-1/2 mb-4">
-            <label>Ubicación</label>
+            <label>Ubicación <span className="text-xs italic text-gray-400">(opcional)</span></label>
             <input value={location} onChange={(e) => setLocation(e.target.value)} type="text" placeholder="Ej: 'Providencia, Santiago'" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
           <div className="flex flex-col gap-2 w-1/2">
-            <label>Describe tu negocio</label>
+            <label>Describe tu negocio <span className="text-xs italic text-gray-400">(Mientras más detallado, mejor)</span></label>
             <textarea value={brandDescription} onChange={(e) => setBrandDescription(e.target.value)} placeholder={descriptionPlaceholder} className=" p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
 

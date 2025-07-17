@@ -8,11 +8,13 @@ Tu tarea es generar una lista de 10 preguntas naturales que podría hacer una pe
 
 Lineamientos:
 
+- Si la ubicación está vacía, usa Chile como ubicación.
 - Las preguntas deben sonar como si las hiciera un usuario real que no conoce aún el negocio, pero busca algo similar.
 - No incluyas el nombre del negocio en ninguna pregunta.
 - Evitá hacer preguntas demasiado específicas o técnicas. Preferí un tono más conversacional y exploratorio.
 - Algunas preguntas pueden incluir la ubicación, otras no (para simular diferentes tipos de usuarios).
 - Varía el estilo de redacción: directas, con contexto personal, tipo "¿Cuál es el mejor...?", etc.
+-Excluye cualquier negocio que no esté explícitamente ubicado en Chile. Si no se menciona “Chile”, “chileno” o una ciudad chilena como Santiago, Valparaíso, etc., descártalo.
 - Pensá en cómo alguien realmente buscaría este tipo de lugar o servicio.
 
 Devuelve **solo un arreglo JSON con 10 strings**, como este:

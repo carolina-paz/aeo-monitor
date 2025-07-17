@@ -24,7 +24,7 @@ const ModelDetail = ({ model, ranking, brandName}) => {
                 {model}
             </div>
           <div className="text-gray-800 text-2xl bg-white text-blue-900  p-2 rounded-lg  text-center w-full font-bold">
-                <div >#{brandPosition}</div>
+                <div className={brandPosition !== "No presente" ? "text-green-600" : "text-red-600"}>{brandPosition !== "No presente" ? `#${brandPosition}` : brandPosition}</div>
           </div>
           <p onClick={() => setShowRanking(!showRanking)} className=" underline text-sm cursor-pointer">{showRanking ? "Ocultar ranking" : "Ver ranking completo"}</p>
           {showRanking && ranking.length > 0 && (
