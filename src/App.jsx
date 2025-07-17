@@ -14,6 +14,7 @@ function App() {
   const [brandDescription, setBrandDescription] = useState('');
   const [location, setLocation] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [GPTanalysis, setGPTanalysis] = useState([]);
   const [questions, setQuestions] = useState([]);
   // const [Claudeanalysis, setClaudeanalysis] = useState([]);
@@ -28,6 +29,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       // 1. Generar las preguntas
       const questions = await generateQuestions(brandName, brandDescription, location);
@@ -64,6 +66,8 @@ function App() {
     } catch (error) {
       console.error("Error en handleSubmit:", error);
       alert(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,11 +94,31 @@ function App() {
 
 
           <div className="flex items-center justify-center gap-8 mt-4 ">
-            <button onClick={(e) => handleSubmit(e)} className="bg-blue-900 hover:bg-blue-800 cursor-pointer text-white text-2xl font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">Analizar mi marca</button>
+            <button 
+              onClick={(e) => handleSubmit(e)} 
+              disabled={isLoading}
+              className={`text-2xl font-semibold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg ${
+                isLoading 
+                  ? 'bg-gray-600 cursor-not-allowed text-gray-300' 
+                  : 'bg-blue-900 hover:bg-blue-800 cursor-pointer text-white'
+              }`}
+            >
+              {isLoading ? 'Analizando...' : 'Analizar mi marca'}
+            </button>
       
           </div>
           
         </div>
+        
+        {/* Loading State */}
+        {isLoading && (
+          <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col items-center justify-center shadow-lg p-8">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mb-4"></div>
+            <div className="text-white text-xl font-semibold">Analizando tu marca...</div>
+            <div className="text-white text-md mt-2 w-2/3 text-center">El AEO mide qué tan bien se posiciona tu negocio en las respuestas de buscadores y asistentes como ChatGPT. Te dará una idea clara de qué tan visible eres para quienes buscan productos o servicios como el tuyo.</div>
+            <div className="text-white text-sm mt-2 italic">Esto puede tomar unos minutos</div>
+          </div>
+        )}
         
         {/* {analyzed && <div className="flex flex-col gap-4">
           <div className="text-white text-2xl font-semibold">
@@ -107,7 +131,7 @@ function App() {
         } */}
         
         {/* Test Section for QuestionBlock Component */}
-       {analyzed && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
+       {analyzed && !isLoading && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
                     <div className="space-y-4">
           {questions.map((question, index) => (
             <div key={index}>

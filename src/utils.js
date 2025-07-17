@@ -325,7 +325,7 @@ Instrucciones importantes:
 - Usa exclusivamente la información contenida en los resultados.
 - No inventes negocios que no estén mencionados directamente.
 - Ignora resultados que sean solo blogs, artículos, recetas o contenido informativo.
-- Incluye todos los negocios, locales o servicios **mencionados explícitamente o claramente identificables como tales** que existan en CHILE.
+- Incluye todos los negocios, locales o servicios **mencionados explícitamente o claramente identificables como tales** que existan en el pais CHILE.
 - Ordena los negocios en el arreglo según el orden en que los usarías en una respuesta útil.
 - No excluyas negocios por ser poco conocidos o nuevos: si es un lugar real, inclúyelo.
 - No incluyas ninguna explicación, saludo o texto adicional.  
