@@ -300,13 +300,13 @@ if (googleSearchResults && googleSearchResults.length > 0) {
 
   contextMessage =
 `
-Actúa como un sistema de análisis AEO (Answer Engine Optimization) que evalúa qué negocios reales aparecen como recomendación en una respuesta generada por un modelo conversacional.
+Actúa como un sistema de análisis AEO (Answer Engine Optimization) que evalúa qué negocios reales serían mencionados en una respuesta generada por un modelo conversacional al recomendar opciones útiles al usuario.
 
 Recibirás:
 - Una pregunta hecha por un usuario.
 - Resultados de búsqueda de Google relevantes.
 
-Tu tarea es identificar todos los negocios o lugares reales que podrían aparecer en una respuesta útil y natural a la pregunta, **basándote solo en los resultados de búsqueda**.
+Tu tarea es identificar todos los negocios o lugares reales **con nombre propio** que podrían aparecer como recomendación en una respuesta útil y natural a la pregunta, **basándote exclusivamente en la información de los resultados de búsqueda**.
 
 ---
 
@@ -322,20 +322,21 @@ ${formattedSearchResults}
 
 Instrucciones importantes:
 
-- Usa exclusivamente la información contenida en los resultados.
-- Excluye cualquier negocio que no esté explícitamente ubicado en Chile. Si no se menciona “Chile”, “chileno” o una ciudad chilena como Santiago, Valparaíso, etc., descártalo.
-- No inventes negocios que no estén mencionados directamente.
-- Ignora resultados que sean solo blogs, artículos, recetas o contenido informativo.
-- Incluye todos los negocios, locales o empresas **mencionados explícitamente o claramente identificables como tales** que existan en el pais CHILE.
-- Ordena los negocios en el arreglo según el orden en que los usarías en una respuesta útil.
-- No excluyas negocios por ser poco conocidos o nuevos: si es un lugar real, inclúyelo.
-- No incluyas ninguna explicación, saludo o texto adicional.  
-- Incluye al menos 5 negocios o lugares reales.
-- Devuelve solo el arreglo JSON, como este:
+- Usa **solo** la información contenida en los resultados de búsqueda.
+- Incluye únicamente **negocios, marcas, locales, servicios o empresas reales con nombre propio**, ubicados en Chile.
+- Excluye cualquier negocio que no esté claramente ubicado en Chile. Si no se menciona explícitamente “Chile” o una ciudad chilena (como Santiago, Valparaíso, etc.), descártalo.
+- No incluyas ejemplos internacionales aunque mencionen ciudades chilenas.
+- Ignora blogs personales, artículos informativos, foros, recetas, opiniones generales u otro contenido que no mencione un negocio real.
+- No inventes nombres. Solo incluye los que aparecen directamente.
+- Ordena los negocios según el orden en que los usarías en una respuesta útil y conversacional para un usuario chileno.
+- No excluyas negocios por ser poco conocidos. Si es real y relevante, inclúyelo.
+- Devuelve de 1 a 10 negocios reales en un arreglo JSON, según lo que consideres más recomendable para responder la pregunta.
+- Si no hay negocios relevantes, devuelve: []
 
-["Negocio 1", "Negocio 2", "Negocio 3", "Negocio 4", "Negocio 5"]
+Formato de salida:
 
-Si no hay negocios relevantes, devuelve: []
+["Negocio 1", "Negocio 2", "Negocio 3"]
+
 `;
 ;
     
