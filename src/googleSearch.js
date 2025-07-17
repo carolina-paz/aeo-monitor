@@ -11,14 +11,13 @@ export async function googleSearch(query, options = {}) {
     key: API_KEY,
     cx: CX,
     q: query,
-    num: 10, // Número de resultados
+    //num: 10, // Número de resultados
     safe: 'active', // Filtro de contenido seguro
     dateRestrict: 'm1', // Restringir a último mes para mayor relevancia
-    sort: 'relevance', // Ordenar por relevancia
+    // sort: 'relevance', // Ordenar por relevancia
     // Configuración geográfica menos restrictiva
-    gl: 'cl', // País Chile
-    cr: 'countryCL', // Región Chile
-    lr: 'lang_es|lang_en', // Español e inglés para mayor cobertura
+
+
    // rights: 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived', // Contenido con licencias abiertas
   };
 

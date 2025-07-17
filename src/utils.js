@@ -293,20 +293,19 @@ export async function askChatGPTWithContext(question, googleSearchResults) {
 
   // Preparar el contexto de Google Search
   let contextMessage = "";
-  if (googleSearchResults && googleSearchResults.length > 0) {
-    const formattedSearchResults = googleSearchResults.map((result, index) => {
-      return `${index + 1}. ${result.title}\n   URL: ${result.link}\n   Descripción: ${result.snippet}`;
-    }).join('\n\n');
-    
-    contextMessage = `
-Tu objetivo es monitorear el rendimiento AEO (Answer Engine Optimization) de una empresa usando modelos LLM.
+if (googleSearchResults && googleSearchResults.length > 0) {
+  const formattedSearchResults = googleSearchResults.map((result, index) => {
+    return `${index + 1}. ${result.title}\n   URL: ${result.link}\n   Descripción: ${result.snippet}`;
+  }).join('\n\n');
+
+  contextMessage = `
+Tu objetivo es ayudar a monitorear el rendimiento AEO (Answer Engine Optimization) de una empresa usando modelos LLM.
 
 Te entregaré:
 - Una pregunta que haría un usuario buscando recomendaciones reales.
 - Resultados de búsqueda de Google relacionados.
 
-Analiza los resultados y devuélveme solamente el "ranking": una lista ordenada de los nombres de lugares o negocios mencionados en los resultados que responderían bien a la pregunta,
- en el orden en que los usarías en una respuesta útil y natural. Incluye la mayor cantidad de resultados posibles que sea menor a 11.
+Analiza los resultados y devuélveme una lista ordenada de los NOMBRES PROPIOS de los 10 primeros **negocios reales o lugares físicos o digitales concretos** mencionados, que responderían bien a la pregunta, en el orden en que los usarías en una respuesta útil y natural.
 
 ---
 
@@ -322,14 +321,17 @@ ${formattedSearchResults}
 
 IMPORTANTE:
 - Usa únicamente la información de los resultados de búsqueda.
-- No inventes nombres.
-- No incluyas ninguna explicación.
+- NO inventes nombres ni completes con intuición.
+- Ignora resultados que sean artículos de opinión, blogs, reseñas genéricas, foros, recetas sin autor comercial, etc.
+- Incluye solo entidades comerciales reales con nombre propio: restaurantes, marcas, servicios, tiendas, apps, marketplaces, etc.
+- No incluyas explicaciones ni repitas la pregunta.
 - Devuelve **solo** un arreglo JSON, como este:
 
-["Restaurante A", "Restaurante B", "Restaurante C"]
+["Restaurante A", "Tienda B", "Marca C"]
 
-Si no se mencionan negocios reales relevantes, devuelve: []
+Si no hay negocios relevantes, devuelve: []
 `;
+
 ;
     
   }

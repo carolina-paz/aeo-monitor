@@ -4,6 +4,10 @@ const ModelDetail = ({ model, ranking, brandName}) => {
 
     const [showRanking, setShowRanking] = useState(false);
 
+    // Find the index of brandName in the ranking
+    const brandIndex = ranking.findIndex(item => item === brandName);
+    const brandPosition = brandIndex !== -1 ? brandIndex + 1 : "No presente";
+
     if (ranking.length === 0) {
         return (
             <div className="flex flex-col gap-2  p-4 rounded-lg">
@@ -20,7 +24,7 @@ const ModelDetail = ({ model, ranking, brandName}) => {
                 {model}
             </div>
           <div className="text-gray-800 text-2xl bg-white text-blue-900  p-2 rounded-lg  text-center w-full font-bold">
-                <div >{brandName}</div>
+                <div >{brandPosition}</div>
           </div>
           <p onClick={() => setShowRanking(!showRanking)} className=" underline text-sm cursor-pointer">{showRanking ? "Ocultar ranking" : "Ver ranking completo"}</p>
           {showRanking && ranking.length > 0 && (
