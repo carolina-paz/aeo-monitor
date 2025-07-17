@@ -28,9 +28,9 @@ const ModelDetail = ({ model, ranking, brandName}) => {
           </div>
           <p onClick={() => setShowRanking(!showRanking)} className=" underline text-sm cursor-pointer">{showRanking ? "Ocultar ranking" : "Ver ranking completo"}</p>
           {showRanking && ranking.length > 0 && (
-                <div className="flex flex-col gap-2 items-start px-1 mt-2">
+                <div className="flex flex-col gap-2 items-start text-left px-1 mt-2">
                     {ranking.map((item, index) => (
-                        <p key={index} className={`${index >= 3 ? 'text-sm' : 'text-lg'}`}>
+                        <p key={index} className={`${index >= 3 ? 'text-sm' : 'text-lg'} truncate w-full`}>
                             {index + 1}. {item}
                         </p>
                     ))}
