@@ -15,6 +15,7 @@ function App() {
   const [location, setLocation] = useState('');
   const [analyzed, setAnalyzed] = useState(false);
   const [GPTanalysis, setGPTanalysis] = useState([]);
+  const [questions, setQuestions] = useState([]);
   // const [Claudeanalysis, setClaudeanalysis] = useState([]);
   // const [Geminianalysis, setGeminianalysis] = useState([]);
   // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
@@ -31,7 +32,7 @@ function App() {
       // 1. Generar las preguntas
       const questions = await generateQuestions(brandName, brandDescription, location);
       console.log("Questions:", questions);
-      
+      setQuestions(questions);
       // 2. Por cada pregunta, obtener resultados de Google y usar askChatGPTWithContext
       const allResults = await googleSearch(questions[0], location);
       for (const question of questions) {
@@ -113,7 +114,7 @@ function App() {
                   ranking={question.ranking} 
                   position={position}
                 /> */}
-                {analyzed && <ModelDetail model="GPT" ranking={GPTanalysis} brandName={brandName} />}
+                {analyzed && <QuestionBlock question={questions[0]} ranking={GPTanalysis} brandName={brandName} />}
               </div>
             {/* ); */}
           {/* })} */}
