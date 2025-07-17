@@ -45,3 +45,6 @@ npm run dev
 4. Verás una tabla con la posición de tu negocio en las recomendaciones dadas por el modelo
 5. Incluye la opción de ver el ranking completo
 
+
+*Este modelo está optimizado para el uso en Chile. 
+
