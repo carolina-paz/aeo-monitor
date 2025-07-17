@@ -305,7 +305,7 @@ Te entregaré:
 - Una pregunta que haría un usuario buscando recomendaciones reales.
 - Resultados de búsqueda de Google relacionados.
 
-Analiza los resultados y devuélveme solamente el "ranking": una lista ordenada de los nombres de negocios mencionados en los resultados que responderían bien a la pregunta,
+Analiza los resultados y devuélveme solamente el "ranking": una lista ordenada de los nombres de lugares o negocios mencionados en los resultados que responderían bien a la pregunta,
  en el orden en que los usarías en una respuesta útil y natural. Incluye la mayor cantidad de resultados posibles que sea menor a 11.
 
 ---

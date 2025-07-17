@@ -1,53 +1,47 @@
-# AEOMonitor - AI Chat Interface
+# AEOMonitor - Interfaz de Chat con IA
 
-This project provides a React-based interface to interact with multiple AI models including ChatGPT, Claude, Gemini, and Perplexity.
+Este proyecto ofrece una interfaz basada en React para interactuar con múltiples modelos de inteligencia artificial, incluyendo ChatGPT, Claude, Gemini y Perplexity.
 
-## Features
+## Funcionalidades
 
-- **ChatGPT Integration**: Uses OpenAI's GPT-3.5-turbo model
-- **Claude Integration**: Uses Anthropic's Claude-3-Sonnet model
-- **Gemini Integration**: Uses Google's Gemini Pro model
-- **Perplexity Integration**: Uses Perplexity's Llama-3.1-Sonar model
+- **Integración con ChatGPT**: Utiliza el modelo GPT-3.5-turbo de OpenAI
+- **Integración con Claude**: Utiliza el modelo Claude-3-Sonnet de Anthropic
+- **Integración con Gemini**: Utiliza el modelo Gemini Pro de Google
+- **Integración con Perplexity**: Utiliza el modelo Llama-3.1-Sonar de Perplexity
 
-## Setup
+## Configuración
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### 1. Clona el repositorio
 
-3. Create a `.env` file in the root directory with your API keys:
-   ```env
-   VITE_OPENAI_API_KEY=your_openai_api_key_here
-   VITE_ANTHROPIC_API_KEY=your_anthropic_api_key_here
-   VITE_GOOGLE_API_KEY=your_google_api_key_here
-   VITE_PERPLEXITY_API_KEY=your_perplexity_api_key_here
-   ```
+### 2. Instala las dependencias
 
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
+```bash
+npm install
+```
 
-## API Keys Required
+### 3. Configura las variables de entorno
 
-- **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
-- **Anthropic API Key**: Get from [Anthropic Console](https://console.anthropic.com/)
-- **Google API Key**: Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **Perplexity API Key**: Get from [Perplexity API](https://www.perplexity.ai/settings/api)
+Crea un archivo `.env` en la raíz del proyecto con tus claves de API:
 
-## Usage
+```env
+VITE_OPENAI_API_KEY=tu_clave_de_openai_aquí
+VITE_ANTHROPIC_API_KEY=tu_clave_de_anthropic_aquí
+VITE_GOOGLE_API_KEY=tu_clave_de_google_aquí
+VITE_PERPLEXITY_API_KEY=tu_clave_de_perplexity_aquí
+VITE_GOOGLE_CX_API_KEY=tu_id_de_búsqueda_de_google_aquí
+```
 
-Click on any of the AI model buttons to test the integration. Each button will send a test question ("Cuentame un chiste") to the respective AI model and display the response in the console.
+### 4. Ejecuta el servidor de desarrollo
 
-## Functions
+```bash
+npm run dev
+```
 
-- `askChatGPT(question)`: Sends a question to OpenAI's ChatGPT
-- `askClaude(question)`: Sends a question to Anthropic's Claude
-- `askGemini(question)`: Sends a question to Google's Gemini
-- `askPerplexity(question)`: Sends a question to Perplexity's AI
+## Uso
 
-## Firebase Integration
+1. Completa el formulario con la información de tu marca
+2. Haz clic en "Analizar mi marca"
+3. El sistema generará una lista de preguntas aleatorias que un posible usuario podría hacer para encontrar un negocio como el que describiste
+4. Verás una tabla con la posición de tu negocio en las recomendaciones dadas por el modelo
+5. Incluye la opción de ver el ranking completo
 
-The project includes Firebase configuration for future database integration. Currently commented out in the code.
