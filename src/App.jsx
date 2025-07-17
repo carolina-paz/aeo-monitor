@@ -33,22 +33,31 @@ function App() {
       const questions = await generateQuestions(brandName, brandDescription, location);
       console.log("Questions:", questions);
       setQuestions(questions);
+      
       // 2. Por cada pregunta, obtener resultados de Google y usar askChatGPTWithContext
-      const allResults = await googleSearch(questions[0], location);
+      const allAnalyses = [];
+      
       for (const question of questions) {
-        // Obtener resultados de Google para esta pregunta
-        console.log(question);
+        console.log("Processing question:", question);
+        
+        // Obtener resultados de Google para esta pregunta específica
+        const googleResults = await googleSearch(question, location);
+        console.log("Google results for question:", googleResults);
+        
+        // Obtener análisis de GPT para esta pregunta específica
+        const questionAnalysis = await askChatGPTWithContext(question, googleResults);
+        console.log("GPT analysis for question:", questionAnalysis);
+        
+        // Agregar el análisis de esta pregunta al arreglo
+        allAnalyses.push(questionAnalysis);
       }
       
-      // 3. Loguear el arreglo de arreglos
-      console.log("Arreglo con todos los resultados:", allResults);
+      // 3. Loguear el arreglo con todos los análisis
+      console.log("Arreglo con todos los análisis:", allAnalyses);
       
-      // Mantener la funcionalidad existente para compatibilidad
-      console.log("About to call askQuestions...");
-      const GPTanalysis = await askChatGPTWithContext(questions[0], allResults);
-      console.log("GPTanalysis received:", GPTanalysis);
-      setGPTanalysis(GPTanalysis);
-      console.log("GPTanalysis set in state");
+      // Guardar todos los análisis en el estado
+      setGPTanalysis(allAnalyses);
+      console.log("All analyses set in state");
       setAnalyzed(true);
       console.log("Analyzed set to true");
 
@@ -100,24 +109,15 @@ function App() {
         {/* Test Section for QuestionBlock Component */}
        {analyzed && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
                     <div className="space-y-4">
-          {/* {GPTanalysis.map((question, index) => {
-            let position = 0;
-            if (question.present) {
-              const foundIndex = findPosition(question.ranking, brandName);
-              position = foundIndex >= 0 ? foundIndex + 1 : 0;
-            }
-            
-            return ( */}
-              <div >
-                {/* <QuestionBlock 
-                  question={question.question} 
-                  ranking={question.ranking} 
-                  position={position}
-                /> */}
-                {analyzed && <QuestionBlock question={questions[0]} ranking={GPTanalysis} brandName={brandName} />}
-              </div>
-            {/* ); */}
-          {/* })} */}
+          {questions.map((question, index) => (
+            <div key={index}>
+              <QuestionBlock 
+                question={question} 
+                ranking={GPTanalysis[index]} 
+                brandName={brandName} 
+              />
+            </div>
+          ))}
           </div>
         </div>
         }
