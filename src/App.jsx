@@ -3,7 +3,7 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import {  findPosition,  generateQuestions,  askChatGPTWithContext, askGeminiWithContext, askClaudeWithContext } from './utils';
+import {  findPosition,  generateQuestions,  askChatGPTWithContext, askGeminiWithContext, askClaudeWithContext, askPerplexityWithContext } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
@@ -18,6 +18,7 @@ function App() {
   const [GPTanalysis, setGPTanalysis] = useState([]);
   const [GeminiAnalysis, setGeminiAnalysis] = useState([]);
   const [ClaudeAnalysis, setClaudeAnalysis] = useState([]);
+  const [PerplexityAnalysis, setPerplexityAnalysis] = useState([]);
   const [questions, setQuestions] = useState([]);
   // const [Claudeanalysis, setClaudeanalysis] = useState([]);
   // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
@@ -41,6 +42,7 @@ function App() {
       const allGPTAnalyses = [];
       const allGeminiAnalyses = [];
       const allClaudeAnalyses = [];
+      const allPerplexityAnalyses = [];
       
       for (const question of questions) {
         console.log("Processing question:", question);
@@ -61,21 +63,28 @@ function App() {
         const questionClaudeAnalysis = await askClaudeWithContext(question, googleResults);
         console.log("Claude analysis for question:", questionClaudeAnalysis);
         
+        // Obtener análisis de Perplexity para esta pregunta específica
+        const questionPerplexityAnalysis = await askPerplexityWithContext(question, googleResults);
+        console.log("Perplexity analysis for question:", questionPerplexityAnalysis);
+        
         // Agregar los análisis de esta pregunta a los arreglos
         allGPTAnalyses.push(questionGPTAnalysis);
         allGeminiAnalyses.push(questionGeminiAnalysis);
         allClaudeAnalyses.push(questionClaudeAnalysis);
+        allPerplexityAnalyses.push(questionPerplexityAnalysis);
       }
       
       // 3. Loguear los arreglos con todos los análisis
       console.log("Arreglo con todos los análisis GPT:", allGPTAnalyses);
       console.log("Arreglo con todos los análisis Gemini:", allGeminiAnalyses);
       console.log("Arreglo con todos los análisis Claude:", allClaudeAnalyses);
+      console.log("Arreglo con todos los análisis Perplexity:", allPerplexityAnalyses);
       
       // Guardar todos los análisis en el estado
       setGPTanalysis(allGPTAnalyses);
       setGeminiAnalysis(allGeminiAnalyses);
       setClaudeAnalysis(allClaudeAnalyses);
+      setPerplexityAnalysis(allPerplexityAnalyses);
       console.log("All analyses set in state");
       setAnalyzed(true);
       console.log("Analyzed set to true");
@@ -155,7 +164,8 @@ function App() {
             const rankings = {
               "ChatGPT": GPTanalysis[index] || [],
               "Gemini": GeminiAnalysis[index] || [],
-              "Claude": ClaudeAnalysis[index] || []
+              "Claude": ClaudeAnalysis[index] || [],
+              "Perplexity": PerplexityAnalysis[index] || []
             };
             
             return (
