@@ -10,6 +10,12 @@ export default async function handler(req, res) {
     // eslint-disable-next-line no-undef
     const apiKey = process.env.VITE_PERPLEXITY_API_KEY;
   
+    console.log("Perplexity API Key check:", {
+      hasApiKey: !!apiKey,
+      apiKeyLength: apiKey ? apiKey.length : 0,
+      apiKeyPrefix: apiKey ? apiKey.substring(0, 10) + "..." : "none"
+    });
+  
     if (!apiKey) {
       return res.status(500).json({ error: "API key not configured" });
     }

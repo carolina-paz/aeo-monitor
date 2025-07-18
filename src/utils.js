@@ -572,6 +572,13 @@ Instrucciones importantes:
     // Verificar si la respuesta es exitosa
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      
+      // Si es un error 401 (API key inválida), manejar graciosamente
+      if (response.status === 401) {
+        console.warn("Perplexity API key appears to be invalid or expired. Skipping Perplexity analysis.");
+        return [];
+      }
+      
       throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
     }
 
@@ -604,6 +611,13 @@ Instrucciones importantes:
     }
   } catch (error) {
     console.error("Error en askPerplexityWithContext:", error);
+    
+    // Si es un error de API key, manejar graciosamente
+    if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+      console.warn("Perplexity API key appears to be invalid or expired. Skipping Perplexity analysis.");
+      return [];
+    }
+    
     throw new Error(`There was an error getting the answer from Perplexity with context: ${error.message}`);
   }
 }
