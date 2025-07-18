@@ -52,35 +52,39 @@ function App() {
         const googleResults = await googleSearch(question, location);
         console.log("Google results for question:", googleResults);
 
-        // Procesar todos los LLMs en paralelo en lugar de secuencialmente
-        const [questionGPTAnalysis, questionGeminiAnalysis, questionClaudeAnalysis] = await Promise.all([
-          askChatGPTWithContext(question, googleResults),
-          askGeminiWithContext(question, googleResults),
-          askClaudeWithContext(question, googleResults),
-          // askPerplexityWithContext(question, googleResults),
-        ]);
-
+        // Obtener análisis de GPT para esta pregunta específica
+        const questionGPTAnalysis = await askChatGPTWithContext(question, googleResults);
         console.log("GPT analysis for question:", questionGPTAnalysis);
+
+        // Obtener análisis de Gemini para esta pregunta específica
+        const questionGeminiAnalysis = await askGeminiWithContext(question, googleResults);
         console.log("Gemini analysis for question:", questionGeminiAnalysis);
-        console.log("Claude analysis for question:", questionClaudeAnalysis);
+
+        // Obtener análisis de Claude para esta pregunta específica
+        // const questionClaudeAnalysis = await askClaudeWithContext(question, googleResults);
+        // console.log("Claude analysis for question:", questionClaudeAnalysis);
+
+        // Obtener análisis de Perplexity para esta pregunta específica
+        const questionPerplexityAnalysis = await askPerplexityWithContext(question, googleResults);
+        console.log("Perplexity analysis for question:", questionPerplexityAnalysis);
 
         // Agregar los análisis de esta pregunta a los arreglos
         allGPTAnalyses.push(questionGPTAnalysis);
         allGeminiAnalyses.push(questionGeminiAnalysis);
-        allClaudeAnalyses.push(questionClaudeAnalysis);
-        // allPerplexityAnalyses.push(questionPerplexityAnalysis);
+       // allClaudeAnalyses.push(questionClaudeAnalysis);
+        allPerplexityAnalyses.push(questionPerplexityAnalysis);
       }
 
       // 3. Loguear los arreglos con todos los análisis
       console.log("Arreglo con todos los análisis GPT:", allGPTAnalyses);
       console.log("Arreglo con todos los análisis Gemini:", allGeminiAnalyses);
-      console.log("Arreglo con todos los análisis Claude:", allClaudeAnalyses);
+      //console.log("Arreglo con todos los análisis Claude:", allClaudeAnalyses);
       console.log("Arreglo con todos los análisis Perplexity:", allPerplexityAnalyses);
 
       // Guardar todos los análisis en el estado
       setGPTanalysis(allGPTAnalyses);
       setGeminiAnalysis(allGeminiAnalyses);
-      setClaudeAnalysis(allClaudeAnalyses);
+      //setClaudeAnalysis(allClaudeAnalyses);
       setPerplexityAnalysis(allPerplexityAnalyses);
       console.log("All analyses set in state");
       setAnalyzed(true);
@@ -102,15 +106,15 @@ function App() {
 
         </div>
         <div className="text-start text-lg  flex flex-col w-full items-center justify-center">
-          <div className="flex flex-col gap-2 w-1/2 mb-4">
+          <div className="flex flex-col gap-2 w-4/5 md:w-1/2 mb-4">
             <label>Nombre de tu marca</label>
             <input value={brandName} onChange={(e) => setBrandName(e.target.value)} type="text" placeholder="Ej: 'La hamburguesería'" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
-          <div className="flex flex-col gap-2 w-1/2 mb-4">
+          <div className="flex flex-col gap-2 w-4/5 md:w-1/2 mb-4">
             <label>Ubicación <span className="text-xs italic text-gray-400">(opcional)</span></label>
             <input value={location} onChange={(e) => setLocation(e.target.value)} type="text" placeholder="Ej: 'Providencia, Santiago'" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
-          <div className="flex flex-col gap-2 w-1/2">
+          <div className="flex flex-col gap-2 w-4/5 md:w-1/2">
             <label>Describe tu negocio <span className="text-xs italic text-gray-400">¿Qué ofreces?  ¿Cómo te busca la gente?</span></label>
             <textarea value={brandDescription} onChange={(e) => setBrandDescription(e.target.value)} placeholder={descriptionPlaceholder} className=" p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
