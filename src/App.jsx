@@ -3,7 +3,7 @@
 import './App.css'
 // import { db } from '../firebase';
 // import { collection, addDoc } from 'firebase/firestore';
-import {  findPosition,  generateQuestions,  askChatGPTWithContext } from './utils';
+import {  findPosition,  generateQuestions,  askChatGPTWithContext, askGeminiWithContext } from './utils';
 import Logo from './assets/logo.png';
 import { useState } from 'react';
 import QuestionBlock from './components/QuestionBlock';
@@ -16,9 +16,9 @@ function App() {
   const [analyzed, setAnalyzed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [GPTanalysis, setGPTanalysis] = useState([]);
+  const [GeminiAnalysis, setGeminiAnalysis] = useState([]);
   const [questions, setQuestions] = useState([]);
   // const [Claudeanalysis, setClaudeanalysis] = useState([]);
-  // const [Geminianalysis, setGeminianalysis] = useState([]);
   // const [Perplexityanalysis, setPerplexityanalysis] = useState([]);
 
 
@@ -36,8 +36,9 @@ function App() {
       console.log("Questions:", questions);
       setQuestions(questions);
       
-      // 2. Por cada pregunta, obtener resultados de Google y usar askChatGPTWithContext
-      const allAnalyses = [];
+      // 2. Por cada pregunta, obtener resultados de Google y usar askChatGPTWithContext y askGeminiWithContext
+      const allGPTAnalyses = [];
+      const allGeminiAnalyses = [];
       
       for (const question of questions) {
         console.log("Processing question:", question);
@@ -47,18 +48,25 @@ function App() {
         console.log("Google results for question:", googleResults);
         
         // Obtener análisis de GPT para esta pregunta específica
-        const questionAnalysis = await askChatGPTWithContext(question, googleResults);
-        console.log("GPT analysis for question:", questionAnalysis);
+        const questionGPTAnalysis = await askChatGPTWithContext(question, googleResults);
+        console.log("GPT analysis for question:", questionGPTAnalysis);
         
-        // Agregar el análisis de esta pregunta al arreglo
-        allAnalyses.push(questionAnalysis);
+        // Obtener análisis de Gemini para esta pregunta específica
+        const questionGeminiAnalysis = await askGeminiWithContext(question, googleResults);
+        console.log("Gemini analysis for question:", questionGeminiAnalysis);
+        
+        // Agregar los análisis de esta pregunta a los arreglos
+        allGPTAnalyses.push(questionGPTAnalysis);
+        allGeminiAnalyses.push(questionGeminiAnalysis);
       }
       
-      // 3. Loguear el arreglo con todos los análisis
-      console.log("Arreglo con todos los análisis:", allAnalyses);
+      // 3. Loguear los arreglos con todos los análisis
+      console.log("Arreglo con todos los análisis GPT:", allGPTAnalyses);
+      console.log("Arreglo con todos los análisis Gemini:", allGeminiAnalyses);
       
       // Guardar todos los análisis en el estado
-      setGPTanalysis(allAnalyses);
+      setGPTanalysis(allGPTAnalyses);
+      setGeminiAnalysis(allGeminiAnalyses);
       console.log("All analyses set in state");
       setAnalyzed(true);
       console.log("Analyzed set to true");
@@ -133,15 +141,23 @@ function App() {
         {/* Test Section for QuestionBlock Component */}
        {analyzed && !isLoading && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
                     <div className="space-y-4">
-          {questions.map((question, index) => (
-            <div key={index}>
-              <QuestionBlock 
-                question={question} 
-                ranking={GPTanalysis[index]} 
-                brandName={brandName} 
-              />
-            </div>
-          ))}
+          {questions.map((question, index) => {
+            // Crear el objeto rankings con la estructura correcta
+            const rankings = {
+              "ChatGPT": GPTanalysis[index] || [],
+              "Gemini": GeminiAnalysis[index] || []
+            };
+            
+            return (
+              <div key={index}>
+                <QuestionBlock 
+                  question={question} 
+                  rankings={rankings} 
+                  brandName={brandName} 
+                />
+              </div>
+            );
+          })}
           </div>
         </div>
         }

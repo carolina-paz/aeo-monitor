@@ -1,4 +1,4 @@
-export const Models = ["ChatGPT"];
+export const Models = ["ChatGPT", "Gemini"];
 
 export const mockQuestions = [
     {

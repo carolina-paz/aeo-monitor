@@ -324,7 +324,7 @@ Instrucciones importantes:
 
 - Usa **solo** la información contenida en los resultados de búsqueda.
 - Incluye únicamente **negocios, marcas, locales, servicios o empresas reales con nombre propio**, ubicados en Chile.
-- Excluye cualquier negocio que no esté claramente ubicado en Chile. Si no se menciona explícitamente “Chile” o una ciudad chilena (como Santiago, Valparaíso, etc.), descártalo.
+- Excluye cualquier negocio que no esté claramente ubicado en Chile. Si no se menciona explícitamente "Chile" o una ciudad chilena (como Santiago, Valparaíso, etc.), descártalo.
 - No incluyas ejemplos internacionales aunque mencionen ciudades chilenas.
 - Ignora blogs personales, artículos informativos, foros, recetas, opiniones generales u otro contenido que no mencione un negocio real.
 - No inventes nombres. Solo incluye los que aparecen directamente.
@@ -338,7 +338,6 @@ Formato de salida:
 ["Negocio 1", "Negocio 2", "Negocio 3"]
 
 `;
-;
     
   }
 
@@ -396,6 +395,125 @@ Formato de salida:
   } catch (error) {
     console.error("Error en askChatGPTWithContext:", error);
     throw new Error(`There was an error getting the answer from ChatGPT with context: ${error.message}`);
+  }
+}
+
+// Function to ask Gemini with Google Search context
+export async function askGeminiWithContext(question, googleSearchResults) {
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+  
+  // Verificar si la API key está configurada
+  if (!apiKey) {
+    throw new Error("Google API Key is not configured. Check your .env file");
+  }
+
+  // Preparar el contexto de Google Search
+  let contextMessage = "";
+if (googleSearchResults && googleSearchResults.length > 0) {
+  const formattedSearchResults = googleSearchResults.map((result, index) => {
+    return `${index + 1}. ${result.title}\n   URL: ${result.link}\n   Descripción: ${result.snippet}`;
+  }).join('\n\n');
+
+  contextMessage =
+`
+Actúa como un sistema de análisis AEO (Answer Engine Optimization) que evalúa qué negocios reales serían mencionados en una respuesta generada por un modelo conversacional al recomendar opciones útiles al usuario.
+
+Recibirás:
+- Una pregunta hecha por un usuario.
+- Resultados de búsqueda de Google relevantes.
+
+Tu tarea es identificar todos los negocios o lugares reales **con nombre propio** que podrían aparecer como recomendación en una respuesta útil y natural a la pregunta, **basándote exclusivamente en la información de los resultados de búsqueda**.
+
+---
+
+Pregunta:
+${question}
+
+---
+
+Resultados de búsqueda de Google:
+${formattedSearchResults}
+
+---
+
+Instrucciones importantes:
+
+- Usa **solo** la información contenida en los resultados de búsqueda.
+- Incluye únicamente **negocios, marcas, locales, servicios o empresas reales con nombre propio**, ubicados en Chile.
+- Excluye cualquier negocio que no esté claramente ubicado en Chile. Si no se menciona explícitamente "Chile" o una ciudad chilena (como Santiago, Valparaíso, etc.), descártalo.
+- No incluyas ejemplos internacionales aunque mencionen ciudades chilenas.
+- Ignora blogs personales, artículos informativos, foros, recetas, opiniones generales u otro contenido que no mencione un negocio real.
+- No inventes nombres. Solo incluye los que aparecen directamente.
+- Ordena los negocios según el orden en que los usarías en una respuesta útil y conversacional para un usuario chileno.
+- No excluyas negocios por ser poco conocidos. Si es real y relevante, inclúyelo.
+- Devuelve de 1 a 10 negocios reales en un arreglo JSON, según lo que consideres más recomendable para responder la pregunta.
+- Si no hay negocios relevantes, devuelve: []
+
+Formato de salida:
+
+["Negocio 1", "Negocio 2", "Negocio 3"]
+
+`;
+    
+  }
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: contextMessage,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1500, // Aumentado para respuestas más detalladas con contexto
+        },
+      }),
+    });
+
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
+    }
+
+    const data = await response.json();
+
+    if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+      const rawResponse = data.candidates[0].content.parts[0].text;
+      
+      // Intentar parsear como JSON primero
+      try {
+        const cleanedResponse = cleanAIResponse(rawResponse);
+        const parsedArray = JSON.parse(cleanedResponse);
+        
+        // Verificar que sea un array
+        if (Array.isArray(parsedArray)) {
+          console.log("Array parseado correctamente:", parsedArray);
+          return parsedArray;
+        } else {
+          console.warn("La respuesta no es un array válido, retornando array vacío");
+          return [];
+        }
+      } catch (error) {
+        console.warn("No se pudo parsear como JSON, retornando array vacío:", error);
+        return [];
+      }
+    } else {
+      throw new Error("The API response does not contain the expected content");
+    }
+  } catch (error) {
+    console.error("Error en askGeminiWithContext:", error);
+    throw new Error(`There was an error getting the answer from Gemini with context: ${error.message}`);
   }
 }
 
