@@ -26,7 +26,7 @@ function App() {
 
 
   // Use mock data instead of hardcoded object
-  const descriptionPlaceholder = `Ej: "Somos una hamburguesería artesanal con opciones veganas, ubicada en Providencia. Abrimos hasta tarde y hacemos delivery por apps."`;
+  const descriptionPlaceholder = `Ej: "Somos una hamburguesería artesanal con opciones veganas y tradicionales. Abrimos hasta tarde y hacemos delivery por apps como Rappi y Uber Eats."`;
 
 
 
@@ -52,21 +52,17 @@ function App() {
         const googleResults = await googleSearch(question, location);
         console.log("Google results for question:", googleResults);
 
-        // Obtener análisis de GPT para esta pregunta específica
-        const questionGPTAnalysis = await askChatGPTWithContext(question, googleResults);
+        // Procesar todos los LLMs en paralelo en lugar de secuencialmente
+        const [questionGPTAnalysis, questionGeminiAnalysis, questionClaudeAnalysis] = await Promise.all([
+          askChatGPTWithContext(question, googleResults),
+          askGeminiWithContext(question, googleResults),
+          askClaudeWithContext(question, googleResults),
+          // askPerplexityWithContext(question, googleResults),
+        ]);
+
         console.log("GPT analysis for question:", questionGPTAnalysis);
-
-        // Obtener análisis de Gemini para esta pregunta específica
-        const questionGeminiAnalysis = await askGeminiWithContext(question, googleResults);
         console.log("Gemini analysis for question:", questionGeminiAnalysis);
-
-        // Obtener análisis de Claude para esta pregunta específica
-        const questionClaudeAnalysis = await askClaudeWithContext(question, googleResults);
         console.log("Claude analysis for question:", questionClaudeAnalysis);
-
-        // Obtener análisis de Perplexity para esta pregunta específica
-        // const questionPerplexityAnalysis = await askPerplexityWithContext(question, googleResults);
-        // console.log("Perplexity analysis for question:", questionPerplexityAnalysis);
 
         // Agregar los análisis de esta pregunta a los arreglos
         allGPTAnalyses.push(questionGPTAnalysis);
@@ -115,7 +111,7 @@ function App() {
             <input value={location} onChange={(e) => setLocation(e.target.value)} type="text" placeholder="Ej: 'Providencia, Santiago'" className="p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
           <div className="flex flex-col gap-2 w-1/2">
-            <label>Describe tu negocio <span className="text-xs italic text-gray-400">(Mientras más detallado, mejor)</span></label>
+            <label>Describe tu negocio <span className="text-xs italic text-gray-400">¿Qué ofreces?  ¿Cómo te busca la gente?</span></label>
             <textarea value={brandDescription} onChange={(e) => setBrandDescription(e.target.value)} placeholder={descriptionPlaceholder} className=" p-2 rounded-xl text-black bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" />
           </div>
 

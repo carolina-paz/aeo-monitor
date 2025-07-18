@@ -24,8 +24,14 @@ const ModelDetail = ({ model, ranking, brandName}) => {
         return (
             <div className="flex flex-col gap-2 p-2 md:p-4 rounded-lg">
                 <div className="text-gray-800 text-lg md:text-2xl bg-white text-blue-900 border-2 border-blue-900 p-2 rounded-lg text-center w-full font-bold">
-                    {model}
+                    <div>
+                        {model}
+                    </div>
+                    <div className="text-gray-800 text-base  bg-white text-blue-900 p-2 rounded-lg text-center w-full font-bold">
+                        No hay resultados
+                    </div>
                 </div>
+
             </div>
         );
     }
