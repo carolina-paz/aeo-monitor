@@ -139,7 +139,7 @@ function App() {
         } */}
         
         {/* Test Section for QuestionBlock Component */}
-       {analyzed && !isLoading && <div className="mt-12 bg-gray-500 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
+       {analyzed && !isLoading && <div className="mt-12 bg-gray-700 rounded-xl w-[80%] flex flex-col gap-4 shadow-lg p-8">
                     <div className="space-y-4">
           {questions.map((question, index) => {
             // Crear el objeto rankings con la estructura correcta
