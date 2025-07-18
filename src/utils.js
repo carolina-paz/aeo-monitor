@@ -88,153 +88,125 @@ export async function askChatGPT(prompt) {
   }
 
 // utils/claude.js
-export async function askClaude(prompt) {
-    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+// Function to ask Claude with Google Search context
+export async function askClaudeWithContext(question, googleSearchResults) {
+  // const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+  
+  // // Verificar si la API key está configurada
+  // if (!apiKey) {
+  //   throw new Error("Anthropic API Key is not configured. Check your .env file");
+  // }
+
+  // Preparar el contexto de Google Search
+  let contextMessage = "";
+if (googleSearchResults && googleSearchResults.length > 0) {
+  const formattedSearchResults = googleSearchResults.map((result, index) => {
+    return `${index + 1}. ${result.title}\n   URL: ${result.link}\n   Descripción: ${result.snippet}`;
+  }).join('\n\n');
+
+  contextMessage =
+`
+Actúa como un sistema de análisis AEO (Answer Engine Optimization) que evalúa qué negocios reales serían mencionados en una respuesta generada por un modelo conversacional al recomendar opciones útiles al usuario.
+
+Recibirás:
+- Una pregunta hecha por un usuario.
+- Resultados de búsqueda de Google relevantes.
+
+Tu tarea es identificar todos los negocios o lugares reales **con nombre propio** que podrían aparecer como recomendación en una respuesta útil y natural a la pregunta, **basándote exclusivamente en la información de los resultados de búsqueda**.
+
+---
+
+Pregunta:
+${question}
+
+---
+
+Resultados de búsqueda de Google:
+${formattedSearchResults}
+
+---
+
+Instrucciones importantes:
+
+- Usa **solo** la información contenida en los resultados de búsqueda.
+- Incluye únicamente **negocios, marcas, locales, servicios o empresas reales con nombre propio**, ubicados en Chile.
+- Excluye cualquier negocio que no esté claramente ubicado en Chile. Si no se menciona explícitamente "Chile" o una ciudad chilena (como Santiago, Valparaíso, etc.), descártalo.
+- No incluyas ejemplos internacionales aunque mencionen ciudades chilenas.
+- Ignora blogs personales, artículos informativos, foros, recetas, opiniones generales u otro contenido que no mencione un negocio real.
+- No inventes nombres. Solo incluye los que aparecen directamente.
+- Ordena los negocios según el orden en que los usarías en una respuesta útil y conversacional para un usuario chileno.
+- No excluyas negocios por ser poco conocidos. Si es real y relevante, inclúyelo.
+- Devuelve de 1 a 10 negocios reales en un arreglo JSON, según lo que consideres más recomendable para responder la pregunta.
+- Si no hay negocios relevantes, devuelve: []
+
+**Formato de respuesta:**
+
+- Solo responde con el arreglo JSON, sin ningún texto adicional.
+- Ejemplo correcto: 
+
+["Negocio 1", "Negocio 2", "Negocio 3"]
+`;
     
-    // Verificar si la API key está configurada
-    if (!apiKey) {
-      throw new Error("Anthropic API Key is not configured. Check your .env file");
-    }
-  
-    try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: 'claude-3-sonnet-20240229',
-          max_tokens: 1024,
-          messages: [
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-        }),
-      });
-  
-      // Verificar si la respuesta es exitosa
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
-      }
-  
-      const data = await response.json();
-  
-      if (data.content && data.content.length > 0) {
-        return data.content[0].text;
-      } else {
-        throw new Error("The API response does not contain the expected content");
-      }
-    } catch (error) {
-      console.error("Error en askClaude:", error);
-      throw new Error(`There was an error getting the answer from Claude: ${error.message}`);
-    }
   }
 
-// utils/gemini.js
-export async function askGemini(prompt) {
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-    
-    // Verificar si la API key está configurada
-    if (!apiKey) {
-      throw new Error("Google API Key is not configured. Check your .env file");
-    }
-  
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1024,
+  try {
+    const response = await fetch("/api/proxyClaude", {
+
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 1500, // Aumentado para respuestas más detalladas con contexto
+        messages: [
+          {
+            role: 'user',
+            content: contextMessage,
           },
-        }),
-      });
-  
-      // Verificar si la respuesta es exitosa
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
-      }
-  
-      const data = await response.json();
-  
-      if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
-        return data.candidates[0].content.parts[0].text;
-      } else {
-        throw new Error("The API response does not contain the expected content");
-      }
-    } catch (error) {
-      console.error("Error en askGemini:", error);
-      throw new Error(`There was an error getting the answer from Gemini: ${error.message}`);
-    }
-  }
+        ],
+        temperature: 0.1,
+      }),
+    });
 
-// utils/perplexity.js
-export async function askPerplexity(prompt) {
-    const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
-    
-    // Verificar si la API key está configurada
-    if (!apiKey) {
-      throw new Error("Perplexity API Key is not configured. Check your .env file");
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
     }
-  
-    try {
-      const response = await fetch('https://api.perplexity.ai/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-sonar-small-128k-online',
-          messages: [
-            {
-              role: 'user',
-            content: prompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 1024,
-        }),
-      });
-  
-      // Verificar si la respuesta es exitosa
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Error de API: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
+
+    const data = await response.json();
+    console.log("Proxy response data:", JSON.stringify(data, null, 2));
+
+    // Claude API devuelve la respuesta en data.response.content[0].text
+    if (data.response && data.response.content && data.response.content.length > 0) {
+      const rawResponse = data.response.content[0].text;
+      
+      // Intentar parsear como JSON primero
+      try {
+        const cleanedResponse = cleanAIResponse(rawResponse);
+        const parsedArray = JSON.parse(cleanedResponse);
+        
+        // Verificar que sea un array
+        if (Array.isArray(parsedArray)) {
+          console.log("Array parseado correctamente:", parsedArray);
+          return parsedArray;
+        } else {
+          console.warn("La respuesta no es un array válido, retornando array vacío");
+          return [];
+        }
+      } catch (error) {
+        console.warn("No se pudo parsear como JSON, retornando array vacío:", error);
+        return [];
       }
-  
-      const data = await response.json();
-  
-      if (data.choices && data.choices.length > 0) {
-        return data.choices[0].message.content;
-      } else {
-        throw new Error("The API response does not contain the expected options");
-      }
-    } catch (error) {
-      console.error("Error en askPerplexity:", error);
-      throw new Error(`There was an error getting the answer from Perplexity: ${error.message}`);
+    } else {
+      throw new Error("The API response does not contain the expected content");
     }
+  } catch (error) {
+    console.error("Error en askClaudeWithContext:", error);
+    throw new Error(`There was an error getting the answer from Claude with context: ${error.message}`);
   }
-  
+}
+
+
 
   export const findPosition = (ranking, name) => {
     const foundIndex = ranking.findIndex(item => {
@@ -273,10 +245,16 @@ export const cleanAIResponse = (response) => {
     return cleaned;
   }
   
-  // Try to extract JSON from the response
-  const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
-  if (jsonMatch) {
-    return jsonMatch[0];
+  // Try to extract JSON array from the response (for Claude responses with explanatory text)
+  const jsonArrayMatch = cleaned.match(/\[[\s\S]*?\]/);
+  if (jsonArrayMatch) {
+    return jsonArrayMatch[0];
+  }
+  
+  // Try to extract JSON object from the response
+  const jsonObjectMatch = cleaned.match(/\{[\s\S]*?\}/);
+  if (jsonObjectMatch) {
+    return jsonObjectMatch[0];
   }
   
   return cleaned;
@@ -375,6 +353,8 @@ Formato de salida:
       // Intentar parsear como JSON primero
       try {
         const cleanedResponse = cleanAIResponse(rawResponse);
+        console.log("Raw response:", rawResponse);
+        console.log("Cleaned response:", cleanedResponse);
         const parsedArray = JSON.parse(cleanedResponse);
         
         // Verificar que sea un array
@@ -387,6 +367,7 @@ Formato de salida:
         }
       } catch (error) {
         console.warn("No se pudo parsear como JSON, retornando array vacío:", error);
+        console.warn("Raw response was:", rawResponse);
         return [];
       }
     } else {
